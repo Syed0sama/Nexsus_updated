@@ -1,0 +1,25 @@
+{
+  "name": "updated_nexus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+"scripts": {
+  "dev": "concurrently \"pnpm --filter desktop dev\" \"pnpm --filter desktop watch:electron\" \"pnpm --filter desktop dev:electron\""
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.9.0",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "cross-env": "^10.1.0",
+    "wait-on": "^9.0.10"
+  }
+}

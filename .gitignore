@@ -1,0 +1,102 @@
+# ===========================
+# Dependencies
+# ===========================
+node_modules/
+.pnpm-store/
+
+# ===========================
+# Build Output
+# ===========================
+dist/
+dist-electron/
+build/
+out/
+release/
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===========================
+# Environment Files
+# ===========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===========================
+# OS Files
+# ===========================
+.DS_Store
+Thumbs.db
+
+# ===========================
+# IDE
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===========================
+# TypeScript
+# ===========================
+*.tsbuildinfo
+
+# ===========================
+# Coverage
+# ===========================
+coverage/
+
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ===========================
+# Electron
+# ===========================
+*.asar
+
+# ===========================
+# Temporary Files
+# ===========================
+tmp/
+temp/
+.cache/
+
+# ===========================
+# Runtime Data
+# ===========================
+*.pid
+*.seed
+*.pid.lock
+
+# ===========================
+# Local AI Models (Future)
+# ===========================
+models/
+ollama-data/
+
+# ===========================
+# Database (Local Development)
+# ===========================
+*.sqlite
+*.db
+
+# ===========================
+# Generated Icons
+# ===========================
+*.icns
+*.ico
