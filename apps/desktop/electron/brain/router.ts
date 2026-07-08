@@ -22,8 +22,10 @@ export function decide(input: string) {
     };
   }
 
-  return {
-    command: "ping",
-    payload: undefined
-  };
+return {
+  command: "ai",
+  payload: {
+    text: input
+  }
+};
 }
