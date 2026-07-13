@@ -1,13 +1,32 @@
-export function buildPrompt(input: string) {
+import { registry } from "../../commands/registry";
+import { SYSTEM_PROMPT } from "./system-prompt";
+import { conversationMemory } from "./conversation-memory";
+
+export function buildPrompt(input: string): string {
+  const history = conversationMemory
+    .all()
+    .map((message) => {
+      return `${message.role.toUpperCase()}: ${message.content}`;
+    })
+    .join("\n");
+
+  const tools = registry
+    .getDescriptions()
+    .map((command) => {
+      return `${command.name}: ${command.description}`;
+    })
+    .join("\n");
+
   return `
-You are Nexus AI, a desktop assistant.
+${SYSTEM_PROMPT}
 
-User request:
+Available Nexus Tools:
+${tools}
+
+Conversation History:
+${history}
+
+Current User Request:
 ${input}
-
-Rules:
-- If action is needed, respond in JSON:
-  { "command": "...", "payload": {...} }
-- If normal chat, respond normally.
-`;
+`.trim();
 }

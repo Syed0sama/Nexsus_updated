@@ -1,13 +1,16 @@
-import os from "os";
-
 import type {
   ICommand,
   CommandContext,
   CommandResult,
 } from "./types";
 
+
 export class SystemInfoCommand implements ICommand {
   readonly name = "systemInfo";
+
+  readonly description =
+    "Provides information about the current system environment";
+
 
   async execute(
     _context: CommandContext
@@ -16,11 +19,8 @@ export class SystemInfoCommand implements ICommand {
       success: true,
       data: {
         platform: process.platform,
+        arch: process.arch,
         version: process.version,
-        memory: process.memoryUsage(),
-        hostname: os.hostname(),
-        cpuCount: os.cpus().length,
-        architecture: process.arch,
       },
     };
   }

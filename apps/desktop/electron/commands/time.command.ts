@@ -4,8 +4,13 @@ import type {
   CommandResult,
 } from "./types";
 
+
 export class TimeCommand implements ICommand {
   readonly name = "time";
+
+  readonly description =
+    "Returns the current date and time";
+
 
   async execute(
     _context: CommandContext

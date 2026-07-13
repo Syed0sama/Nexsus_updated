@@ -1,0 +1,20 @@
+apps/desktop/electron/ai
+├── config
+│   └── ai.config.ts
+├── core
+│   ├── brain.ts
+│   ├── conversation-memory.ts
+│   ├── orchestrator.ts
+│   ├── performance-logger.ts
+│   ├── planner-ai.ts
+│   ├── prompt-builder.ts
+│   ├── system-prompt.ts
+│   └── types.ts
+├── memory
+│   └── memory-store.ts
+└── provider
+    ├── index.ts
+    ├── ollama.ts
+    └── provider.ts
+
+5 directories, 13 files

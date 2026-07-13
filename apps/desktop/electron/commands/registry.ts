@@ -4,23 +4,43 @@ export class CommandRegistry {
   private readonly commands = new Map<string, ICommand>();
 
   register(command: ICommand): void {
-    if (this.commands.has(command.name)) {
-      throw new Error(`Command "${command.name}" is already registered.`);
+    const key = command.name.trim().toLowerCase();
+
+    if (this.commands.has(key)) {
+      throw new Error(
+        `Command "${command.name}" is already registered.`
+      );
     }
 
-    this.commands.set(command.name, command);
+    this.commands.set(key, command);
   }
 
   get(name: string): ICommand | undefined {
-    return this.commands.get(name);
+    return this.commands.get(
+      name.trim().toLowerCase()
+    );
   }
 
   has(name: string): boolean {
-    return this.commands.has(name);
+    return this.commands.has(
+      name.trim().toLowerCase()
+    );
   }
 
   list(): string[] {
-    return [...this.commands.keys()];
+    return [...this.commands.values()].map(
+      (command) => command.name
+    );
+  }
+
+  getDescriptions() {
+    return [...this.commands.values()].map(
+      (command) => ({
+        name: command.name,
+        description: command.description,
+        parameters: command.parameters ?? [],
+      })
+    );
   }
 }
 

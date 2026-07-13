@@ -1,0 +1,100 @@
+.
+├── .gitignore
+├── README.md
+├── apps
+│   └── desktop
+│       ├── .gitignore
+│       ├── README.md
+│       ├── data
+│       │   └── conversation.json
+│       ├── electron
+│       │   ├── ai
+│       │   │   ├── config
+│       │   │   │   └── ai.config.ts
+│       │   │   ├── core
+│       │   │   │   ├── brain.ts
+│       │   │   │   ├── conversation-memory.ts
+│       │   │   │   ├── orchestrator.ts
+│       │   │   │   ├── performance-logger.ts
+│       │   │   │   ├── planner-ai.ts
+│       │   │   │   ├── prompt-builder.ts
+│       │   │   │   ├── system-prompt.ts
+│       │   │   │   └── types.ts
+│       │   │   ├── memory
+│       │   │   │   └── memory-store.ts
+│       │   │   └── provider
+│       │   │       ├── index.ts
+│       │   │       ├── ollama.ts
+│       │   │       └── provider.ts
+│       │   ├── brain
+│       │   │   ├── command-router.ts
+│       │   │   ├── executor.ts
+│       │   │   ├── planner.ts
+│       │   │   └── types.ts
+│       │   ├── commands
+│       │   │   ├── ai.command.ts
+│       │   │   ├── apps
+│       │   │   │   └── open-app.command.ts
+│       │   │   ├── index.ts
+│       │   │   ├── ping.command.ts
+│       │   │   ├── registry.ts
+│       │   │   ├── system
+│       │   │   │   └── volume-up.command.ts
+│       │   │   ├── system-info.command.ts
+│       │   │   ├── time.command.ts
+│       │   │   └── types.ts
+│       │   ├── ipc
+│       │   │   └── command-handler.ts
+│       │   ├── main.ts
+│       │   ├── planner
+│       │   │   ├── index.ts
+│       │   │   ├── planner-logger.ts
+│       │   │   ├── planner-parser.ts
+│       │   │   ├── planner-prompt.ts
+│       │   │   ├── planner-provider.ts
+│       │   │   ├── planner-retry.ts
+│       │   │   ├── planner-service.ts
+│       │   │   ├── planner-validator.ts
+│       │   │   └── types.ts
+│       │   ├── preload.ts
+│       │   ├── services
+│       │   │   ├── app-resolver.ts
+│       │   │   ├── open-app.service.ts
+│       │   │   └── volume.service.ts
+│       │   ├── shared-types.ts
+│       │   ├── tsconfig.json
+│       │   ├── types
+│       │   └── utils
+│       ├── eslint.config.js
+│       ├── index.html
+│       ├── package.json
+│       ├── public
+│       │   ├── favicon.svg
+│       │   └── icons.svg
+│       ├── src
+│       │   ├── App.css
+│       │   ├── App.tsx
+│       │   ├── assets
+│       │   │   ├── hero.png
+│       │   │   ├── react.svg
+│       │   │   └── vite.svg
+│       │   ├── index.css
+│       │   ├── main.tsx
+│       │   └── types
+│       │       └── global.d.ts
+│       ├── tsconfig.app.json
+│       ├── tsconfig.json
+│       ├── tsconfig.node.json
+│       └── vite.config.ts
+├── docs
+│   ├── api
+│   ├── architecture
+│   └── decisions
+├── nexus-structure.txt
+├── package.json
+├── packages
+│   └── shared
+├── pnpm-lock.yaml
+└── pnpm-workspace.yaml
+
+29 directories, 69 files
