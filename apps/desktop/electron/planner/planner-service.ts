@@ -19,7 +19,10 @@ export async function plan(
   console.log(response);
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    const result = parsePlannerResponse(response);
+    const result = parsePlannerResponse(
+  response,
+  input
+);
 
     console.log("\n========== PARSED RESULT ==========\n");
     console.dir(result, { depth: null });

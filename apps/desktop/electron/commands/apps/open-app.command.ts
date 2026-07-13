@@ -7,29 +7,30 @@ import {
 import { openApplication } from "../../services/open-app.service";
 
 interface OpenAppPayload {
-  app: string;
+  target: string;
   url?: string;
 }
 
 export class OpenAppCommand implements ICommand {
   readonly name = "openApp";
 
- readonly description =
-  "Opens a Windows desktop application. If a URL is supplied, the application opens that URL.";
+  readonly description =
+    "Opens an application, folder, file, or website.";
 
   readonly parameters = [
     {
-      name: "app",
+      name: "target",
       type: "string",
       required: true,
-      description: "Registered application identifier or alias."
+      description:
+        "Application, folder, file, or other resource to open.",
     },
     {
       name: "url",
       type: "string",
       required: false,
-     description:"Optional HTTPS URL. When provided, the application should open this URL.",
-
+      description:
+        "Optional HTTPS URL to open with the target application.",
     },
   ] as const;
 
@@ -39,22 +40,22 @@ export class OpenAppCommand implements ICommand {
     const payload =
       context.payload as Partial<OpenAppPayload>;
 
-    const app = payload.app?.trim();
+    const target = payload.target?.trim();
 
-    if (!app) {
+    if (!target) {
       return {
         success: false,
-        error: "APP_NAME_REQUIRED",
+        error: "TARGET_REQUIRED",
       };
     }
 
     try {
-      await openApplication(app, payload.url);
+      await openApplication(target, payload.url);
 
       return {
         success: true,
         data: {
-          app,
+          target,
           url: payload.url ?? null,
           status: "opened",
         },
@@ -65,7 +66,7 @@ export class OpenAppCommand implements ICommand {
         error:
           error instanceof Error
             ? error.message
-            : "FAILED_TO_OPEN_APP",
+            : "FAILED_TO_OPEN_RESOURCE",
       };
     }
   }

@@ -52,13 +52,33 @@ Rules:
 - Do not invent command names.
 - Infer all required parameters from the user's request.
 - If a tool accepts an optional parameter and the user provides it, include it.
-- The "app" parameter must be one of the registered applications listed above.
-- Websites such as YouTube, Google, GitHub, Reddit, Facebook, X, Instagram, etc. are NOT application names.
-- To open any website, use app = "chrome" and place the complete HTTPS URL in the "url" parameter.
+- Do not invent payload properties that are not defined by the selected tool.
+- Do not replace user requested folders with applications.
+- If the user says Desktop, Downloads, Documents, Pictures, Videos, or Music, keep the exact folder name as the target.
+- Only use registered applications when the user explicitly requests an application.
+- For folders or local paths, never use the url parameter.
+- Never generate file:// URLs.
+- Never use explorer as a replacement for opening folders.
+- If the user asks to open Desktop, Downloads, Documents, Pictures, Videos, or Music, return that exact name as target.
+
+Open resource rules:
+
+- The "target" parameter represents the resource to open.
+- The target can be a registered application, folder, file, or supported resource.
+- Use the exact registered application id when opening an application.
+- Websites are not applications.
+- To open a website, use target = "chrome" and provide the complete HTTPS URL in the "url" parameter.
+- The url parameter is only for web URLs opened inside applications that support URLs.
 - If the user wants to search a website, generate the appropriate search URL.
 - Always return complete HTTPS URLs.
 - Never return relative URLs.
-- Do not invent payload properties that are not defined by the selected tool.
+- Do not replace user requested folders with applications.
+- If the user says Desktop, Downloads, Documents, Pictures, Videos, or Music, keep the exact folder name as the target.
+- Only use registered applications when the user explicitly requests an application.
+- Do not convert folder names into application names.
+- Desktop is a folder, not Explorer.
+- Downloads is a folder, not Explorer.
+- Documents is a folder, not Explorer.
 
 Tool response:
 
