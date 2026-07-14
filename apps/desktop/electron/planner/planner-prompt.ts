@@ -77,6 +77,14 @@ Volume tool rules:
 - If the user specifies an exact volume (for example: "volume 80", "set volume to 50%", "make volume 100"), use action = "set" and value = the requested percentage.
 - The value parameter must be a number between 0 and 100.
 
+Brightness tool rules:
+
+- If the user says "increase brightness", use action = "increase".
+- If the user says "decrease brightness", use action = "decrease".
+- If the user asks for the current brightness, use action = "get".
+- If the user specifies an exact brightness (for example: "brightness 80", "set brightness to 50%", "make brightness 100"), use action = "set" and value = the requested percentage.
+- The value parameter must be a number between 0 and 100.
+
 Open resource rules:
 
 - The "target" parameter represents the resource to open.
