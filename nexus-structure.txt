@@ -39,6 +39,7 @@
 │       │   │   ├── ping.command.ts
 │       │   │   ├── registry.ts
 │       │   │   ├── system
+│       │   │   │   ├── battery.command.ts
 │       │   │   │   └── volume-up.command.ts
 │       │   │   ├── system-info.command.ts
 │       │   │   ├── time.command.ts
@@ -59,12 +60,12 @@
 │       │   ├── preload.ts
 │       │   ├── services
 │       │   │   ├── app-resolver.ts
+│       │   │   ├── battery.service.ts
 │       │   │   ├── open-app.service.ts
+│       │   │   ├── path-resolver.ts
 │       │   │   └── volume.service.ts
 │       │   ├── shared-types.ts
-│       │   ├── tsconfig.json
-│       │   ├── types
-│       │   └── utils
+│       │   └── tsconfig.json
 │       ├── eslint.config.js
 │       ├── index.html
 │       ├── package.json
@@ -86,15 +87,9 @@
 │       ├── tsconfig.json
 │       ├── tsconfig.node.json
 │       └── vite.config.ts
-├── docs
-│   ├── api
-│   ├── architecture
-│   └── decisions
 ├── nexus-structure.txt
 ├── package.json
-├── packages
-│   └── shared
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
 
-29 directories, 69 files
+21 directories, 72 files

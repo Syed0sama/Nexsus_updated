@@ -51,7 +51,12 @@ export async function openApplication(
   url?: string
 ): Promise<void> {
 
+    console.log("Received target:", JSON.stringify(target));
+    const resolved = resolveApplication(target);
+
+  console.log("Resolved app:", resolved);
   let executable = "";
+
   const argumentsList: string[] = [];
 
 
@@ -115,16 +120,19 @@ export async function openApplication(
   }
 
 
-  const argumentString =
-    argumentsList.join(" ");
+ const argumentString =
+  argumentsList.join(" ");
 
-
-  const script =
-    `Start-Process -FilePath '${escapePowerShell(
-      executable
-    )}' -ArgumentList '${escapePowerShell(
-      argumentString
-    )}'`;
+const script =
+  argumentString.length > 0
+    ? `Start-Process -FilePath '${escapePowerShell(
+        executable
+      )}' -ArgumentList '${escapePowerShell(
+        argumentString
+      )}'`
+    : `Start-Process -FilePath '${escapePowerShell(
+        executable
+      )}'`;
 
 
   console.log(
