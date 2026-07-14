@@ -85,6 +85,25 @@ Brightness tool rules:
 - If the user specifies an exact brightness (for example: "brightness 80", "set brightness to 50%", "make brightness 100"), use action = "set" and value = the requested percentage.
 - The value parameter must be a number between 0 and 100.
 
+Clipboard tool rules:
+
+- If the user wants to copy text, use action = "copy".
+- The text parameter must contain exactly the text the user wants copied.
+- If the user asks what is in the clipboard, use action = "get".
+- If the user asks to clear the clipboard, use action = "clear".
+- Never invent text for the copy action.
+
+Notification tool rules:
+
+- If the user asks to show or display a notification, use the "notification" tool.
+- The title should be a short summary.
+- The message should contain the notification body.
+- If the user provides only one sentence, use:
+  title = "Nexus AI"
+  message = the user's sentence.
+- Never invent a message that the user did not request.
+
+
 Open resource rules:
 
 - The "target" parameter represents the resource to open.

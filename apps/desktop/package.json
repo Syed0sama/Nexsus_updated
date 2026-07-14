@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "commonjs",
   "scripts": {
-  "dev": "vite",
-  "build:electron": "tsc -p electron/tsconfig.json",
-  "electron": "electron dist-electron/main.js",
-  "dev:electron": "wait-on http://localhost:5173 && electron dist-electron/main.js",
-  "watch:electron": "tsc -p electron/tsconfig.json --watch"
-},
+    "dev": "vite",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "electron": "electron dist-electron/main.js",
+    "dev:electron": "wait-on http://localhost:5173 && electron dist-electron/main.js",
+    "watch:electron": "tsc -p electron/tsconfig.json --watch"
+  },
   "dependencies": {
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
