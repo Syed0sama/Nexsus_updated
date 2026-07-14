@@ -33,15 +33,16 @@ export class CommandRegistry {
     );
   }
 
-  getDescriptions() {
-    return [...this.commands.values()].map(
-      (command) => ({
-        name: command.name,
-        description: command.description,
-        parameters: command.parameters ?? [],
-      })
-    );
-  }
+getDescriptions() {
+  return [...this.commands.values()].map(
+    (command) => ({
+      name: command.name,
+      description: command.description,
+      parameters: command.parameters ?? [],
+      plannerHints: command.plannerHints ?? [],
+    })
+  );
+}
 }
 
 export const registry = new CommandRegistry();

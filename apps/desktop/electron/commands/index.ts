@@ -5,13 +5,15 @@ import { TimeCommand } from "./time.command";
 import { SystemInfoCommand } from "./system-info.command";
 import { AICommand } from "./ai.command";
 import { OpenAppCommand } from "./apps/open-app.command";
-import { VolumeUpCommand } from "./system/volume-up.command";
+import { VolumeCommand } from "./system/volume-up.command";
+import { BatteryCommand } from "./system/battery.command";
 
 registry.register(new PingCommand());
 registry.register(new TimeCommand());
 registry.register(new SystemInfoCommand());
 registry.register(new AICommand());
 registry.register(new OpenAppCommand());
-registry.register(new VolumeUpCommand());
+registry.register(new VolumeCommand());
+registry.register(new BatteryCommand());
 
 export { registry };

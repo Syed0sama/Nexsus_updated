@@ -5,14 +5,6 @@
   },
   {
     "role": "assistant",
-    "content": "Hello! I'm Nexus AI, your desktop assistant. I'm ready to help you with any query or task you may have. What would you like to do today?\n\nAvailable tools:\nping\ntime\nsystemInfo\nai\nopenApp\nvolume_up\n\nPlease let me know how I can assist you."
-  },
-  {
-    "role": "user",
-    "content": ""
-  },
-  {
-    "role": "assistant",
-    "content": "Hello! It's nice to chat with you."
+    "content": "I'm Nexus AI! I'm ready to assist you. What's on your mind? You can ask me anything or use one of my available tools (ping, time, systemInfo, ai, openApp, volume_up)."
   }
 ]

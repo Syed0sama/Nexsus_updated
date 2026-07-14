@@ -17,11 +17,14 @@ export interface CommandResult {
 }
 
 export interface ICommand {
+
   readonly name: string;
 
   readonly description: string;
 
   readonly parameters?: readonly CommandParameter[];
+
+  readonly plannerHints?: readonly string[];
 
   execute(
     context: CommandContext
