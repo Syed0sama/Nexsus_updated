@@ -6,7 +6,8 @@
 │       ├── .gitignore
 │       ├── README.md
 │       ├── data
-│       │   └── conversation.json
+│       │   ├── conversation.json
+│       │   └── user-memory.json
 │       ├── electron
 │       │   ├── ai
 │       │   │   ├── config
@@ -20,6 +21,7 @@
 │       │   │   │   ├── system-prompt.ts
 │       │   │   │   └── types.ts
 │       │   │   ├── memory
+│       │   │   │   ├── format-memory.ts
 │       │   │   │   ├── memory-extractor.ts
 │       │   │   │   ├── memory-store.ts
 │       │   │   │   └── user-memory.ts
@@ -67,6 +69,7 @@
 │       │   ├── preload.ts
 │       │   ├── services
 │       │   │   ├── app-resolver.ts
+│       │   │   ├── audio-capture.service.ts
 │       │   │   ├── battery.service.ts
 │       │   │   ├── brightness.service.ts
 │       │   │   ├── clipboard.service.ts
@@ -74,10 +77,14 @@
 │       │   │   ├── open-app.service.ts
 │       │   │   ├── path-resolver.ts
 │       │   │   ├── screenshot.service.ts
+│       │   │   ├── speech-recognizer.ts
+│       │   │   ├── voice.service.ts
 │       │   │   ├── volume.service.ts
 │       │   │   └── whatsapp.service.ts
 │       │   ├── shared-types.ts
-│       │   └── tsconfig.json
+│       │   ├── tsconfig.json
+│       │   └── types
+│       │       └── mic.d.ts
 │       ├── eslint.config.js
 │       ├── index.html
 │       ├── package.json
@@ -106,4 +113,4 @@
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
 
-21 directories, 86 files
+22 directories, 92 files

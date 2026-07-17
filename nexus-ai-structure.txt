@@ -10,6 +10,7 @@ apps/desktop/electron/ai
 │   ├── system-prompt.ts
 │   └── types.ts
 ├── memory
+│   ├── format-memory.ts
 │   ├── memory-extractor.ts
 │   ├── memory-store.ts
 │   └── user-memory.ts
@@ -19,4 +20,4 @@ apps/desktop/electron/ai
     ├── provider.ts
     └── vision-provider.ts
 
-5 directories, 15 files
+5 directories, 16 files

@@ -1,18 +1,10 @@
 [
   {
     "role": "user",
-    "content": "my favourite color is green"
+    "content": "Stand what's a message to my zong? Hello?"
   },
   {
     "role": "assistant",
-    "content": "That's great! Your favorite color is indeed green. Is there anything else you'd like to discuss or any other requests?"
-  },
-  {
-    "role": "user",
-    "content": "What is my favourite color"
-  },
-  {
-    "role": "assistant",
-    "content": "Your favorite color is green. Is there anything else you'd like to discuss or any other requests?"
+    "content": "I'm not sure I understand your request. Could you please provide more context or clarify what \"zong\" refers to in this situation? Are you trying to send a message, and if so, who is the intended recipient? \n\nIf you meant to ask for help with sending a WhatsApp message, I can assist with that using the `whatsapp` tool."
   }
 ]

@@ -11,6 +11,7 @@ apps/desktop/electron
 │   │   ├── system-prompt.ts
 │   │   └── types.ts
 │   ├── memory
+│   │   ├── format-memory.ts
 │   │   ├── memory-extractor.ts
 │   │   ├── memory-store.ts
 │   │   └── user-memory.ts
@@ -58,6 +59,7 @@ apps/desktop/electron
 ├── preload.ts
 ├── services
 │   ├── app-resolver.ts
+│   ├── audio-capture.service.ts
 │   ├── battery.service.ts
 │   ├── brightness.service.ts
 │   ├── clipboard.service.ts
@@ -65,9 +67,13 @@ apps/desktop/electron
 │   ├── open-app.service.ts
 │   ├── path-resolver.ts
 │   ├── screenshot.service.ts
+│   ├── speech-recognizer.ts
+│   ├── voice.service.ts
 │   ├── volume.service.ts
 │   └── whatsapp.service.ts
 ├── shared-types.ts
-└── tsconfig.json
+├── tsconfig.json
+└── types
+    └── mic.d.ts
 
-13 directories, 58 files
+14 directories, 63 files

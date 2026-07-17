@@ -12,6 +12,8 @@ import { ClipboardCommand } from "./system/clipboard.command";
 import { NotificationCommand } from "./system/notification.command";
 import { ScreenshotCommand } from "./system/screenshot.command";
 import { WhatsAppCommand } from "./system/whatsapp.command";
+import { VoiceCommand } from "./system/voice.command";
+
 
 registry.register(new PingCommand());
 registry.register(new TimeCommand());
@@ -25,6 +27,8 @@ registry.register(new ClipboardCommand());
 registry.register(new NotificationCommand());
 registry.register(new ScreenshotCommand());
 registry.register(new WhatsAppCommand());
+registry.register(new VoiceCommand());
+
 
 console.log("REGISTERED COMMANDS:", registry.list());
 

@@ -100,3 +100,6 @@ ollama-data/
 # ===========================
 *.icns
 *.ico
+
+# Whisper.cpp
+whisper.cpp/
