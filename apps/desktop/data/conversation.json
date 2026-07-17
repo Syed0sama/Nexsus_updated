@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": ""
+    "content": "send whatsapp message to My Zong hello"
   },
   {
     "role": "assistant",
-    "content": "I'm Nexus AI! I'm ready to assist you. What's on your mind? You can ask me anything or use one of my available tools (ping, time, systemInfo, ai, openApp, volume_up)."
+    "content": "openApp --app \"WhatsApp\""
   }
 ]

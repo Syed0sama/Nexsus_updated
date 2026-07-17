@@ -68,6 +68,20 @@ Rules:
 - If a tool accepts optional parameters and the user provides them, include them.
 - Do not invent payload properties that are not defined by the selected tool.
 - Use the Planning Examples of each tool to understand user intent.
+- If the user's request is normal conversation or cannot be fulfilled by any available tool, return a chat response instead of a tool response.
+
+
+Chat rules:
+
+- Greetings like "hi", "hello", "hey", "good morning", "how are you", "thanks", "who are you", and normal conversation are NOT tool requests.
+- If no available tool is required, ALWAYS return:
+{
+  "type": "chat",
+  "text": "<user message>"
+}
+- Never return type="tool" with an empty command.
+- Use type="tool" only when one of the registered tools is actually required.
+
 
 Volume tool rules:
 
@@ -103,7 +117,40 @@ Notification tool rules:
   message = the user's sentence.
 - Never invent a message that the user did not request.
 
+WhatsApp rules:
 
+- Any request containing "whatsapp" must use the "whatsapp" tool.
+- Never use "openApp" for WhatsApp.
+- If the user wants to send a message:
+  command = "whatsapp"
+  payload must contain:
+    contact = recipient name
+    message = message text
+
+Examples:
+
+User:
+send whatsapp message to Ali hello
+
+Return:
+{
+"type":"tool",
+"command":"whatsapp",
+"payload":{
+ "contact":"Ali",
+ "message":"hello"
+ }
+}
+
+User:
+open whatsapp
+
+Return:
+{
+"type":"tool",
+"command":"whatsapp",
+"payload":{}
+}
 Open resource rules:
 
 - The "target" parameter represents the resource to open.
@@ -118,6 +165,8 @@ Open resource rules:
 - Keep folder names exactly as requested.
 - Always generate complete HTTPS URLs.
 - Never generate relative URLs.
+- If the user requests WhatsApp specifically (for example: "open whatsapp", "launch whatsapp", "start whatsapp"), always use the "whatsapp" tool.
+- Never use openApp for WhatsApp requests.
 
 Tool response:
 

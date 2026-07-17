@@ -16,7 +16,8 @@ apps/desktop/electron
 │   └── provider
 │       ├── index.ts
 │       ├── ollama.ts
-│       └── provider.ts
+│       ├── provider.ts
+│       └── vision-provider.ts
 ├── brain
 │   ├── command-router.ts
 │   ├── executor.ts
@@ -31,6 +32,10 @@ apps/desktop/electron
 │   ├── registry.ts
 │   ├── system
 │   │   ├── battery.command.ts
+│   │   ├── brightness.command.ts
+│   │   ├── clipboard.command.ts
+│   │   ├── notification.command.ts
+│   │   ├── screenshot.command.ts
 │   │   └── volume-up.command.ts
 │   ├── system-info.command.ts
 │   ├── time.command.ts
@@ -52,10 +57,14 @@ apps/desktop/electron
 ├── services
 │   ├── app-resolver.ts
 │   ├── battery.service.ts
+│   ├── brightness.service.ts
+│   ├── clipboard.service.ts
+│   ├── notification.service.ts
 │   ├── open-app.service.ts
 │   ├── path-resolver.ts
+│   ├── screenshot.service.ts
 │   └── volume.service.ts
 ├── shared-types.ts
 └── tsconfig.json
 
-13 directories, 46 files
+13 directories, 55 files

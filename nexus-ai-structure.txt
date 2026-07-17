@@ -15,6 +15,7 @@ apps/desktop/electron/ai
 └── provider
     ├── index.ts
     ├── ollama.ts
-    └── provider.ts
+    ├── provider.ts
+    └── vision-provider.ts
 
-5 directories, 13 files
+5 directories, 14 files

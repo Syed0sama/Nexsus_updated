@@ -1,15 +1,19 @@
 import type { AIProvider } from "./provider";
 import { aiConfig } from "../config/ai.config";
 
+
 type OllamaResponse = {
   response: string;
 };
 
+
 export class OllamaProvider implements AIProvider {
   readonly name = "ollama";
 
-  async chat(prompt: string): Promise<string> {
-    const res = await fetch(`${aiConfig.ollama.baseUrl}/api/generate`, {
+ async chat(prompt: string): Promise<string> {
+  const res = await fetch(
+    `${aiConfig.ollama.baseUrl}/api/generate`,
+    {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -19,19 +23,22 @@ export class OllamaProvider implements AIProvider {
         prompt,
         stream: false,
       }),
-    });
-
-    if (!res.ok) {
-      throw new Error("Ollama request failed");
     }
+  );
 
-    const raw = await res.json();
-    const data = raw as OllamaResponse;
-
-    return data.response;
+  if (!res.ok) {
+    throw new Error("Ollama request failed");
   }
 
-  async stream(
+  const raw = await res.json();
+  const data = raw as OllamaResponse;
+
+  return data.response;
+}
+
+
+  async stream
+  (
     prompt: string,
     onChunk: (chunk: string) => void
   ): Promise<void> {

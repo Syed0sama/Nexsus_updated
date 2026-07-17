@@ -53,11 +53,7 @@ const APPLICATIONS: readonly AppDefinition[] = [
     supportsUrl: true,
     supportsProfile: true,
   },
-  {
-    id: "whatsapp",
-    aliases: ["whatsapp", "whats app"],
-    target: "whatsapp",
-  },
+
 ];
 
 export function resolveApplication(

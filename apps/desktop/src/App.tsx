@@ -16,11 +16,26 @@ export default function App() {
       text: input,
     });
 
-    // assistant message add
-    const botMsg = {
-      role: "nexus",
-      text: JSON.stringify(res, null, 2),
-    };
+   let responseText = JSON.stringify(res, null, 2);
+
+if (
+  res?.type === "confirmation" &&
+  res?.data
+) {
+  responseText = 
+`Message ready:
+
+To: ${res.data.contact}
+
+Message: ${res.data.message}
+
+Send? (yes/no)`;
+}
+
+const botMsg = {
+  role: "nexus",
+  text: responseText,
+};
 
     setMessages((prev) => [...prev, botMsg]);
 
