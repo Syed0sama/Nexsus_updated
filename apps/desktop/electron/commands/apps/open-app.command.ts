@@ -16,6 +16,13 @@ export class OpenAppCommand implements ICommand {
 
   readonly description =
     "Opens an application, folder, file, or website.";
+  
+  readonly plannerHints = [
+    "Use this tool to open websites through Chrome using HTTPS URLs.",
+    "Website requests should use target='chrome' and provide a complete HTTPS url.",
+    "YouTube search requests should open Chrome with a YouTube search URL.",
+    "Example: Search 'belki' on YouTube means target='chrome' and url='https://www.youtube.com/search?q=belki'."
+  ];
 
   readonly parameters = [
     {

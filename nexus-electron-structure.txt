@@ -12,7 +12,9 @@ apps/desktop/electron
 │   │   ├── system-prompt.ts
 │   │   └── types.ts
 │   ├── memory
-│   │   └── memory-store.ts
+│   │   ├── memory-extractor.ts
+│   │   ├── memory-store.ts
+│   │   └── user-memory.ts
 │   └── provider
 │       ├── index.ts
 │       ├── ollama.ts
@@ -36,7 +38,8 @@ apps/desktop/electron
 │   │   ├── clipboard.command.ts
 │   │   ├── notification.command.ts
 │   │   ├── screenshot.command.ts
-│   │   └── volume-up.command.ts
+│   │   ├── volume-up.command.ts
+│   │   └── whatsapp.command.ts
 │   ├── system-info.command.ts
 │   ├── time.command.ts
 │   └── types.ts
@@ -63,8 +66,9 @@ apps/desktop/electron
 │   ├── open-app.service.ts
 │   ├── path-resolver.ts
 │   ├── screenshot.service.ts
-│   └── volume.service.ts
+│   ├── volume.service.ts
+│   └── whatsapp.service.ts
 ├── shared-types.ts
 └── tsconfig.json
 
-13 directories, 55 files
+13 directories, 59 files

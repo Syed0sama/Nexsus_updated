@@ -1,10 +1,18 @@
 [
   {
     "role": "user",
-    "content": "send whatsapp message to My Zong hello"
+    "content": "I can help you search YouTube, but I'll need to use an available tool. Let's try the 'openApp' command for this."
   },
   {
     "role": "assistant",
-    "content": "openApp --app \"WhatsApp\""
+    "content": "Sure, let's use the \"openApp\" command to open YouTube. \n\nWould you like me to proceed with opening YouTube now?"
+  },
+  {
+    "role": "user",
+    "content": "I don't see a tool for searching YouTube. You can try opening your default web browser and searching for 'belke' yourself."
+  },
+  {
+    "role": "assistant",
+    "content": "I understand you're having trouble finding the YouTube search functionality using our current tools. Let's try an alternative approach:\n\nWould you like me to open your default web browser and search for 'belke'?"
   }
 ]

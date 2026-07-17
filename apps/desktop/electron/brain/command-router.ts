@@ -1,5 +1,5 @@
 import { registry } from "../commands";
-import { createExecutionPlan } from "./planner";
+import { normalizeAndPlan } from "./input-normalizer";
 import { Executor } from "./executor";
 
 const executor = new Executor();
@@ -12,7 +12,7 @@ export async function routeCommand(
     const text =
       (payload as { text?: string })?.text ?? "";
 
-    const plan = await createExecutionPlan(text);
+    const plan = await normalizeAndPlan(text);
 
     console.log("======== PLANNER ========");
     console.log("INPUT:", text);

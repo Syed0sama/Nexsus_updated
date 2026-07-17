@@ -21,7 +21,9 @@
 │       │   │   │   ├── system-prompt.ts
 │       │   │   │   └── types.ts
 │       │   │   ├── memory
-│       │   │   │   └── memory-store.ts
+│       │   │   │   ├── memory-extractor.ts
+│       │   │   │   ├── memory-store.ts
+│       │   │   │   └── user-memory.ts
 │       │   │   └── provider
 │       │   │       ├── index.ts
 │       │   │       ├── ollama.ts
@@ -45,7 +47,8 @@
 │       │   │   │   ├── clipboard.command.ts
 │       │   │   │   ├── notification.command.ts
 │       │   │   │   ├── screenshot.command.ts
-│       │   │   │   └── volume-up.command.ts
+│       │   │   │   ├── volume-up.command.ts
+│       │   │   │   └── whatsapp.command.ts
 │       │   │   ├── system-info.command.ts
 │       │   │   ├── time.command.ts
 │       │   │   └── types.ts
@@ -72,7 +75,8 @@
 │       │   │   ├── open-app.service.ts
 │       │   │   ├── path-resolver.ts
 │       │   │   ├── screenshot.service.ts
-│       │   │   └── volume.service.ts
+│       │   │   ├── volume.service.ts
+│       │   │   └── whatsapp.service.ts
 │       │   ├── shared-types.ts
 │       │   └── tsconfig.json
 │       ├── eslint.config.js
@@ -101,4 +105,4 @@
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
 
-21 directories, 81 files
+21 directories, 85 files

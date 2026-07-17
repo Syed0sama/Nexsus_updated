@@ -28,8 +28,13 @@ function normalizePlannerInput(input: string): string {
   return text;
 }
 
-export async function createExecutionPlan(
-  input: string
-): Promise<ExecutionPlan> {
-  return plan(normalizePlannerInput(input));
+export async function normalizeAndPlan(input: string) {
+
+  console.log("RAW INPUT:", input);
+
+  const normalized = normalizePlannerInput(input);
+
+  console.log("NORMALIZED INPUT:", normalized);
+
+  return plan(normalized);
 }
