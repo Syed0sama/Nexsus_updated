@@ -8,7 +8,7 @@ import { validatePlan } from "./planner-validator";
 export async function plan(
   input: string
 ): Promise<ExecutionPlan> {
-  const prompt = buildPlannerPrompt(input);
+  const prompt = await buildPlannerPrompt(input);
 
   console.log("\n========== PLANNER PROMPT ==========\n");
   console.log(prompt);

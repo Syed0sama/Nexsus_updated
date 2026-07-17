@@ -16,7 +16,6 @@
 │       │   │   │   ├── conversation-memory.ts
 │       │   │   │   ├── orchestrator.ts
 │       │   │   │   ├── performance-logger.ts
-│       │   │   │   ├── planner-ai.ts
 │       │   │   │   ├── prompt-builder.ts
 │       │   │   │   ├── system-prompt.ts
 │       │   │   │   └── types.ts
@@ -32,7 +31,7 @@
 │       │   ├── brain
 │       │   │   ├── command-router.ts
 │       │   │   ├── executor.ts
-│       │   │   ├── planner.ts
+│       │   │   ├── input-normalizer.ts
 │       │   │   └── types.ts
 │       │   ├── commands
 │       │   │   ├── ai.command.ts
@@ -100,9 +99,11 @@
 │       ├── tsconfig.json
 │       ├── tsconfig.node.json
 │       └── vite.config.ts
+├── nexus-ai-structure.txt
+├── nexus-electron-structure.txt
 ├── nexus-structure.txt
 ├── package.json
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
 
-21 directories, 85 files
+21 directories, 86 files

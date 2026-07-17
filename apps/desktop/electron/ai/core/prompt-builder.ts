@@ -1,8 +1,10 @@
 import { registry } from "../../commands/registry";
 import { SYSTEM_PROMPT } from "./system-prompt";
 import { conversationMemory } from "./conversation-memory";
+import { userMemory } from "../memory/user-memory";
+import { formatUserMemory } from "../memory/format-memory";
 
-export function buildPrompt(input: string): string {
+export async function buildPrompt(input: string): Promise<string> {
   const history = conversationMemory
     .all()
     .map((message) => {
@@ -17,14 +19,34 @@ export function buildPrompt(input: string): string {
     })
     .join("\n");
 
+  let memoryContext = "";
+
+  try {
+    const memories = await userMemory.get();
+
+    console.log(
+      "[PromptBuilder] User Memory:",
+      memories
+    );
+
+    memoryContext = formatUserMemory(memories);
+  } catch (error) {
+    console.warn(
+      "[PromptBuilder] Failed to load user memory:",
+      error
+    );
+  }
+
   return `
 ${SYSTEM_PROMPT}
 
-Available Nexus Tools:
-${tools}
+${memoryContext}
 
 Conversation History:
 ${history}
+
+Available Nexus Tools:
+${tools}
 
 Current User Request:
 ${input}

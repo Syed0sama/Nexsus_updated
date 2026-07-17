@@ -6,7 +6,6 @@ apps/desktop/electron/ai
 │   ├── conversation-memory.ts
 │   ├── orchestrator.ts
 │   ├── performance-logger.ts
-│   ├── planner-ai.ts
 │   ├── prompt-builder.ts
 │   ├── system-prompt.ts
 │   └── types.ts
@@ -20,4 +19,4 @@ apps/desktop/electron/ai
     ├── provider.ts
     └── vision-provider.ts
 
-5 directories, 16 files
+5 directories, 15 files

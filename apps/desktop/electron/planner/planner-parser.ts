@@ -79,7 +79,7 @@ function normalizeFolderIntent(
 export function parsePlannerResponse(
   response: string,
   input?: string
-  ): PlannerResult {
+): PlannerResult {
   try {
     const parsed = JSON.parse(response);
 
@@ -98,14 +98,14 @@ export function parsePlannerResponse(
         },
       };
 
-    if (input) {
-  plan = normalizeFolderIntent(
-    input,
-    plan
-  );
-}
+      if (input) {
+        plan = normalizeFolderIntent(
+          input,
+          plan
+        );
+      }
 
-plan = normalizeOpenResource(plan);
+      plan = normalizeOpenResource(plan);
 
       return {
         success: true,
@@ -113,14 +113,11 @@ plan = normalizeOpenResource(plan);
       };
     }
 
-    if (
-      parsed &&
-      parsed.type === "chat" &&
-      typeof parsed.text === "string"
-    ) {
+    // Chat requests should always preserve the original user input.
+    if (parsed && parsed.type === "chat") {
       const plan: ExecutionPlan = {
         type: "chat",
-        text: parsed.text,
+        text: input ?? "",
         metadata: {
           source: "planner",
           createdAt: new Date().toISOString(),

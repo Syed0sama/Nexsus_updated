@@ -7,7 +7,6 @@ apps/desktop/electron
 │   │   ├── conversation-memory.ts
 │   │   ├── orchestrator.ts
 │   │   ├── performance-logger.ts
-│   │   ├── planner-ai.ts
 │   │   ├── prompt-builder.ts
 │   │   ├── system-prompt.ts
 │   │   └── types.ts
@@ -23,7 +22,7 @@ apps/desktop/electron
 ├── brain
 │   ├── command-router.ts
 │   ├── executor.ts
-│   ├── planner.ts
+│   ├── input-normalizer.ts
 │   └── types.ts
 ├── commands
 │   ├── ai.command.ts
@@ -71,4 +70,4 @@ apps/desktop/electron
 ├── shared-types.ts
 └── tsconfig.json
 
-13 directories, 59 files
+13 directories, 58 files
