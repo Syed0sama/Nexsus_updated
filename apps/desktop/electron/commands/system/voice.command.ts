@@ -11,7 +11,7 @@ export class VoiceCommand implements ICommand {
   readonly name = "voice";
 
   readonly description =
-    "Records microphone input and converts speech to text using Whisper.";
+"Handles voice input using microphone and Whisper speech recognition.";
 
  readonly plannerHints = [
   "start listening",
@@ -31,7 +31,7 @@ export class VoiceCommand implements ICommand {
       type: "string",
       required: true,
       description:
-        "Voice action. Supported actions: start or stop.",
+"Voice action. Supported actions: listen, start or stop.",
     },
   ] as const;
 
@@ -64,6 +64,32 @@ export class VoiceCommand implements ICommand {
         };
       }
 
+      if (action === "listen") {
+
+  const text =
+    await voiceService.listen();
+
+  console.log(
+    "[Voice] Listening transcript:",
+    text
+  );
+
+
+  if (!text) {
+    return {
+      success: false,
+      error: "EMPTY_TRANSCRIPT",
+    };
+  }
+
+
+  return routeCommand(
+    "brain",
+    {
+      text,
+    }
+  );
+}
 
       if (action === "stop") {
 

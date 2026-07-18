@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": "Stand what's a message to my zong? Hello?"
+    "content": "And what's a message to district code you are an idiot."
   },
   {
     "role": "assistant",
-    "content": "I'm not sure I understand your request. Could you please provide more context or clarify what \"zong\" refers to in this situation? Are you trying to send a message, and if so, who is the intended recipient? \n\nIf you meant to ask for help with sending a WhatsApp message, I can assist with that using the `whatsapp` tool."
+    "content": "I understand that you seem frustrated, but it seems like there might be some confusion about the term \"message to district code.\" This is not related to any common usage of terms in messaging or districts. Perhaps you meant something else? I'd be happy to help if you can provide more context or clarify your question."
   }
 ]

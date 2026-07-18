@@ -9,6 +9,7 @@ export class VoiceService {
 
   async stopRecording(): Promise<string> {
     console.log("[Voice] Stopping recording...");
+    
 
     const audioFile = await audioCaptureService.stop();
 
@@ -21,6 +22,22 @@ export class VoiceService {
     return text.trim();
   }
 
+  async listen(): Promise<string> {
+  await this.startRecording();
+
+  console.log("[Voice] Listening...");
+
+  await new Promise((resolve) =>
+    setTimeout(resolve, 10000)
+  );
+
+  const text =
+    await this.stopRecording();
+
+  console.log("[Voice] Listen result:", text);
+
+  return text;
+}
   isRecording(): boolean {
     return audioCaptureService.isRecording();
   }
