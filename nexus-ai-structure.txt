@@ -4,6 +4,7 @@ apps/desktop/electron/ai
 ├── core
 │   ├── brain.ts
 │   ├── conversation-memory.ts
+│   ├── language-detector.ts
 │   ├── orchestrator.ts
 │   ├── performance-logger.ts
 │   ├── prompt-builder.ts
@@ -11,13 +12,23 @@ apps/desktop/electron/ai
 │   └── types.ts
 ├── memory
 │   ├── format-memory.ts
+│   ├── index.ts
 │   ├── memory-extractor.ts
+│   ├── memory-forget.ts
+│   ├── memory-manager.ts
+│   ├── memory-responder.ts
+│   ├── memory-retriever.ts
+│   ├── memory-scoring.ts
 │   ├── memory-store.ts
+│   ├── memory-types.ts
+│   ├── memory-v2-store.ts
+│   ├── memory-validator.ts
 │   └── user-memory.ts
 └── provider
+    ├── embedding.ts
     ├── index.ts
     ├── ollama.ts
     ├── provider.ts
     └── vision-provider.ts
 
-5 directories, 16 files
+5 directories, 27 files

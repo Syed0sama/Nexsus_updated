@@ -7,21 +7,21 @@ export class VoiceService {
     console.log("[Voice] Recording started");
   }
 
-  async stopRecording(): Promise<string> {
-    console.log("[Voice] Stopping recording...");
-    
+async stopRecording(): Promise<string> {
+  console.log("[Voice] Stopping recording...");
 
-    const audioFile = await audioCaptureService.stop();
+  const audioFile = await audioCaptureService.stop();
 
-    console.log("[Voice] Transcribing...");
+  console.log("[Voice] Transcribing...");
+  console.time("[Timing] Whisper transcription");
 
-    const text = await speechRecognizerService.transcribe(audioFile);
+  const text = await speechRecognizerService.transcribe(audioFile);
 
-    console.log("[Voice] Transcript:", text);
+  console.timeEnd("[Timing] Whisper transcription");
+  console.log("[Voice] Transcript:", text);
 
-    return text.trim();
-  }
-
+  return text.trim();
+}
   async listen(): Promise<string> {
   await this.startRecording();
 

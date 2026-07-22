@@ -1,5 +1,7 @@
 import { provider } from "../provider";
 import { userMemory } from "./user-memory";
+import { memoryManager } from "./memory-manager";
+import { memoryValidator } from "./memory-validator";
 
 /**
  * Extracts durable, reusable facts about the user from a single
@@ -27,6 +29,9 @@ function buildExtractionPrompt(
 You extract durable facts about the USER from a conversation exchange,
 for a personal assistant's long-term memory.
 
+The user may write in English or Roman Urdu (Urdu written in Latin
+letters, e.g. "meri ammi ka naam Saira hai").
+
 Only extract facts that are:
 - Stable / long-term (preferences, identity, relationships, default tools/apps)
 - Explicitly stated or clearly implied by the user
@@ -47,6 +52,71 @@ Rules:
 - Do NOT return YAML.
 - Do NOT return key:value pairs.
 - Do NOT include explanations.
+
+CRITICAL — Choosing the correct key:
+Pay close attention to WHOSE name or fact is being stated. Never default
+to a generic key like "name" or "user_name" if the sentence is about
+someone else (mother, father, wife, husband, sibling, friend, etc).
+
+Use these exact keys when the sentence matches:
+- The USER's own name          -> "name"
+- The user's mother's name     -> "mother_name"   (ammi, ami, maa, walida)
+- The user's father's name     -> "father_name"   (abbu, abba, baap, walid)
+- The user's wife's name       -> "wife_name"     (biwi, begum)
+- The user's husband's name    -> "husband_name"  (shohar)
+- The user's sibling's name    -> "sibling_name"  (bhai, behn)
+- The user's friend's name     -> "friend_name"   (dost)
+- A favorite/preference        -> "favorite_<thing>" (e.g. favorite_car, favorite_color, favorite_food)
+- A default tool/app/browser   -> "default_<thing>" (e.g. default_browser)
+
+If the sentence is about the user's mother, the key is ALWAYS
+"mother_name" — never "name" or "user_name", even if the sentence
+also happens to mention what her name IS to the user. The subject of
+the sentence (whose name is this?) determines the key, not the fact
+that a name is being given.
+
+Examples:
+
+User:
+my favourite car is bugatti
+
+Output:
+{
+  "favorite_car": "bugatti"
+}
+
+User:
+meri ammi ka naam Saira hai
+
+Output:
+{
+  "mother_name": "Saira"
+}
+
+User:
+mera naam Osama hai
+
+Output:
+{
+  "name": "Osama"
+}
+
+User:
+meri biwi ka naam Tayiba hai
+
+Output:
+{
+  "wife_name": "Tayiba"
+}
+
+User:
+mere abbu ka naam Tahir hai
+
+Output:
+{
+  "father_name": "Tahir"
+}
+
 - If there is nothing worth remembering, return exactly:
 {}
 
@@ -124,9 +194,32 @@ console.log(response);
         return;
       }
 
-      for (const [key, value] of entries) {
-        await userMemory.set(key, value);
-      }
+for (const [key, value] of entries) {
+  const validation = memoryValidator.validate(
+    key,
+    value
+  );
+
+  if (!validation.allowed) {
+    console.log(
+      "[MemoryExtractor] Blocked memory:",
+      key,
+      validation.reason
+    );
+    continue;
+  }
+
+  await userMemory.set(key, value);
+
+  await memoryManager.add({
+    key,
+    value,
+    type: validation.type,
+    scope: "long_term",
+    confidence: validation.confidence,
+    source: "memory_extractor",
+  });
+}
 
       console.log(
         "[MemoryExtractor] Stored facts:",

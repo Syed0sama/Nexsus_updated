@@ -1,12 +1,16 @@
 .
 ├── .gitignore
 ├── README.md
+├── Recording-fixed.wav
+├── Recording.m4a:Zone.Identifier
+├── Recording.wav
 ├── apps
 │   └── desktop
 │       ├── .gitignore
 │       ├── README.md
 │       ├── data
 │       │   ├── conversation.json
+│       │   ├── memory-v2.json
 │       │   └── user-memory.json
 │       ├── electron
 │       │   ├── ai
@@ -15,6 +19,7 @@
 │       │   │   ├── core
 │       │   │   │   ├── brain.ts
 │       │   │   │   ├── conversation-memory.ts
+│       │   │   │   ├── language-detector.ts
 │       │   │   │   ├── orchestrator.ts
 │       │   │   │   ├── performance-logger.ts
 │       │   │   │   ├── prompt-builder.ts
@@ -22,10 +27,20 @@
 │       │   │   │   └── types.ts
 │       │   │   ├── memory
 │       │   │   │   ├── format-memory.ts
+│       │   │   │   ├── index.ts
 │       │   │   │   ├── memory-extractor.ts
+│       │   │   │   ├── memory-forget.ts
+│       │   │   │   ├── memory-manager.ts
+│       │   │   │   ├── memory-responder.ts
+│       │   │   │   ├── memory-retriever.ts
+│       │   │   │   ├── memory-scoring.ts
 │       │   │   │   ├── memory-store.ts
+│       │   │   │   ├── memory-types.ts
+│       │   │   │   ├── memory-v2-store.ts
+│       │   │   │   ├── memory-validator.ts
 │       │   │   │   └── user-memory.ts
 │       │   │   └── provider
+│       │   │       ├── embedding.ts
 │       │   │       ├── index.ts
 │       │   │       ├── ollama.ts
 │       │   │       ├── provider.ts
@@ -34,6 +49,7 @@
 │       │   │   ├── command-router.ts
 │       │   │   ├── executor.ts
 │       │   │   ├── input-normalizer.ts
+│       │   │   ├── intent-matcher.ts
 │       │   │   └── types.ts
 │       │   ├── commands
 │       │   │   ├── ai.command.ts
@@ -48,6 +64,7 @@
 │       │   │   │   ├── clipboard.command.ts
 │       │   │   │   ├── notification.command.ts
 │       │   │   │   ├── screenshot.command.ts
+│       │   │   │   ├── voice.command.ts
 │       │   │   │   ├── volume-up.command.ts
 │       │   │   │   └── whatsapp.command.ts
 │       │   │   ├── system-info.command.ts
@@ -73,11 +90,15 @@
 │       │   │   ├── battery.service.ts
 │       │   │   ├── brightness.service.ts
 │       │   │   ├── clipboard.service.ts
+│       │   │   ├── maps-service.ts
 │       │   │   ├── notification.service.ts
 │       │   │   ├── open-app.service.ts
 │       │   │   ├── path-resolver.ts
+│       │   │   ├── romanizer.ts
 │       │   │   ├── screenshot.service.ts
 │       │   │   ├── speech-recognizer.ts
+│       │   │   ├── tts.service.ts
+│       │   │   ├── urdu-scriptifier.ts
 │       │   │   ├── voice.service.ts
 │       │   │   ├── volume.service.ts
 │       │   │   └── whatsapp.service.ts
@@ -98,7 +119,11 @@
 │       │   │   ├── hero.png
 │       │   │   ├── react.svg
 │       │   │   └── vite.svg
+│       │   ├── components
+│       │   │   └── VoiceCore.tsx
 │       │   ├── index.css
+│       │   ├── lib
+│       │   │   └── tone.ts
 │       │   ├── main.tsx
 │       │   └── types
 │       │       └── global.d.ts
@@ -113,4 +138,4 @@
 ├── pnpm-lock.yaml
 └── pnpm-workspace.yaml
 
-22 directories, 92 files
+24 directories, 115 files

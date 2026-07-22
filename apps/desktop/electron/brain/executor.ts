@@ -2,13 +2,16 @@ import { registry } from "../commands";
 import type { ExecutionPlan } from "./types";
 
 export class Executor {
-  async execute(plan: ExecutionPlan) {
+  async execute(
+    plan: ExecutionPlan,
+    source: "voice" | "text" = "text"
+  ) {
     switch (plan.type) {
       case "tool":
         return this.executeTool(plan);
 
       case "chat":
-        return this.executeChat(plan);
+        return this.executeChat(plan, source);
     }
   }
 
@@ -31,7 +34,8 @@ export class Executor {
   }
 
   private async executeChat(
-    plan: Extract<ExecutionPlan, { type: "chat" }>
+    plan: Extract<ExecutionPlan, { type: "chat" }>,
+    source: "voice" | "text"
   ) {
     const aiCommand = registry.get("ai");
 
@@ -45,6 +49,7 @@ export class Executor {
     return aiCommand.execute({
       payload: {
         text: plan.text,
+        source,
       },
     });
   }

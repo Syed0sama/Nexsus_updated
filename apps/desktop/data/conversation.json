@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": "And what's a message to district code you are an idiot."
+    "content": "What is my wife's name?"
   },
   {
     "role": "assistant",
-    "content": "I understand that you seem frustrated, but it seems like there might be some confusion about the term \"message to district code.\" This is not related to any common usage of terms in messaging or districts. Perhaps you meant something else? I'd be happy to help if you can provide more context or clarify your question."
+    "content": "Your wife name is tayyeba."
   }
 ]

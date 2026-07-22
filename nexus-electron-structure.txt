@@ -5,6 +5,7 @@ apps/desktop/electron
 │   ├── core
 │   │   ├── brain.ts
 │   │   ├── conversation-memory.ts
+│   │   ├── language-detector.ts
 │   │   ├── orchestrator.ts
 │   │   ├── performance-logger.ts
 │   │   ├── prompt-builder.ts
@@ -12,10 +13,20 @@ apps/desktop/electron
 │   │   └── types.ts
 │   ├── memory
 │   │   ├── format-memory.ts
+│   │   ├── index.ts
 │   │   ├── memory-extractor.ts
+│   │   ├── memory-forget.ts
+│   │   ├── memory-manager.ts
+│   │   ├── memory-responder.ts
+│   │   ├── memory-retriever.ts
+│   │   ├── memory-scoring.ts
 │   │   ├── memory-store.ts
+│   │   ├── memory-types.ts
+│   │   ├── memory-v2-store.ts
+│   │   ├── memory-validator.ts
 │   │   └── user-memory.ts
 │   └── provider
+│       ├── embedding.ts
 │       ├── index.ts
 │       ├── ollama.ts
 │       ├── provider.ts
@@ -24,6 +35,7 @@ apps/desktop/electron
 │   ├── command-router.ts
 │   ├── executor.ts
 │   ├── input-normalizer.ts
+│   ├── intent-matcher.ts
 │   └── types.ts
 ├── commands
 │   ├── ai.command.ts
@@ -38,6 +50,7 @@ apps/desktop/electron
 │   │   ├── clipboard.command.ts
 │   │   ├── notification.command.ts
 │   │   ├── screenshot.command.ts
+│   │   ├── voice.command.ts
 │   │   ├── volume-up.command.ts
 │   │   └── whatsapp.command.ts
 │   ├── system-info.command.ts
@@ -63,11 +76,15 @@ apps/desktop/electron
 │   ├── battery.service.ts
 │   ├── brightness.service.ts
 │   ├── clipboard.service.ts
+│   ├── maps-service.ts
 │   ├── notification.service.ts
 │   ├── open-app.service.ts
 │   ├── path-resolver.ts
+│   ├── romanizer.ts
 │   ├── screenshot.service.ts
 │   ├── speech-recognizer.ts
+│   ├── tts.service.ts
+│   ├── urdu-scriptifier.ts
 │   ├── voice.service.ts
 │   ├── volume.service.ts
 │   └── whatsapp.service.ts
@@ -76,4 +93,4 @@ apps/desktop/electron
 └── types
     └── mic.d.ts
 
-14 directories, 63 files
+14 directories, 80 files

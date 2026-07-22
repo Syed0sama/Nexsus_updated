@@ -65,15 +65,9 @@ export class VoiceCommand implements ICommand {
       }
 
       if (action === "listen") {
+  const text = await voiceService.listen();
 
-  const text =
-    await voiceService.listen();
-
-  console.log(
-    "[Voice] Listening transcript:",
-    text
-  );
-
+  console.log("[Voice] Listening transcript:", text);
 
   if (!text) {
     return {
@@ -82,23 +76,17 @@ export class VoiceCommand implements ICommand {
     };
   }
 
-
-  return routeCommand(
-    "brain",
-    {
-      text,
-    }
-  );
+  return routeCommand("brain", {
+    text,
+    source: "voice",   // <-- YE ADD KARO
+  });
 }
 
-      if (action === "stop") {
-
-  const text =
-    await voiceService.stopRecording();
+if (action === "stop") {
+  const text = await voiceService.stopRecording();
 
   console.log("[Voice] Sending transcript to brain:", text);
 
-
   if (!text) {
     return {
       success: false,
@@ -106,13 +94,10 @@ export class VoiceCommand implements ICommand {
     };
   }
 
-
-  return routeCommand(
-    "brain",
-    {
-      text,
-    }
-  );
+  return routeCommand("brain", {
+    text,
+    source: "voice",   // <-- YE ADD KARO
+  });
 }
 
 

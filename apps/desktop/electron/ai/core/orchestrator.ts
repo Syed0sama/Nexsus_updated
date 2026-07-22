@@ -1,39 +1,43 @@
-import { aiBrain } from "./brain";
+import { aiBrain, isQuestion } from "./brain";
 import { PerformanceLogger } from "./performance-logger";
 import { provider } from "../provider";
 import { conversationMemory } from "./conversation-memory";
 import { memoryExtractor } from "../memory/memory-extractor";
+import { speak } from "../../services/tts.service";
 
-export async function orchestrate(text: string) {
+export async function orchestrate(
+  text: string,
+  source: "voice" | "text" = "text"
+) {
   const startedAt = PerformanceLogger.start();
 
   try {
-    // Save user message
     await conversationMemory.add({
       role: "user",
       content: text,
     });
 
+    const { text: response, language } = await aiBrain(text);
 
-    const response = await aiBrain(text);
-
-    // Save assistant response
     await conversationMemory.add({
       role: "assistant",
       content: response,
     });
 
-    // Fire-and-forget: extract durable user facts in the background.
-    // Deliberately not awaited so it never adds latency to the response,
-    // and memoryExtractor.extract() internally never throws, so this
-    // can't destabilize the main flow either.
-    void memoryExtractor.extract(text, response);
+    // Only extract facts from statements, never from questions —
+    // a question's answer can be wrong/uncertain (e.g. due to STT
+    // errors), so extracting "facts" from it risks poisoning memory.
+    if (!isQuestion(text)) {
+      void memoryExtractor.extract(text, response);
+    }
 
-    PerformanceLogger.end(
-      provider.name,
-      startedAt,
-      true
-    );
+    if (source === "voice") {
+      speak(response, language).catch((error) => {
+        console.warn("[TTS] Failed to speak response:", error);
+      });
+    }
+
+    PerformanceLogger.end(provider.name, startedAt, true);
 
     return {
       success: true,
@@ -41,13 +45,7 @@ export async function orchestrate(text: string) {
       data: response,
     };
   } catch (error) {
-    PerformanceLogger.end(
-      provider.name,
-      startedAt,
-      false,
-      error
-    );
-
+    PerformanceLogger.end(provider.name, startedAt, false, error);
     throw error;
   }
 }

@@ -38,12 +38,14 @@ export class WhatsAppCommand implements ICommand {
   ];
 
 
-  readonly plannerHints = [
-    "Use for requests like: open whatsapp.",
-    "Use for requests like: send whatsapp message to someone.",
-    "Extract contact and message from user request.",
-    "If user confirms with yes, use confirm=true.",
-  ];
+ readonly plannerHints = [
+  "ONLY use this tool when the user's request explicitly mentions 'WhatsApp' by name.",
+  "Use for requests like: 'open whatsapp'.",
+  "Use for requests like: 'send whatsapp message to <contact> saying <message>'.",
+  "Do NOT use this tool for search requests, YouTube requests, or any request that doesn't explicitly say 'WhatsApp'.",
+  "Extract contact and message from user request only when 'WhatsApp' is explicitly mentioned.",
+  "If user confirms with yes, use confirm=true.",
+];
 
 
 

@@ -3,6 +3,18 @@ import path from "path";
 
 import { registerCommandHandler } from "./ipc/command-handler";
 
+// WSL2/WSLg doesn't have proper GPU passthrough, so Electron's GPU
+// compositing falls back to software rendering — which keeps the
+// main process burning CPU in the background (even during idle UI
+// updates like the recording indicator), starving CPU-heavy work
+// like Whisper transcription running alongside it. Disabling hardware
+// acceleration avoids that GPU-process overhead entirely.
+// main.ts, disableHardwareAcceleration() ke sath hi:
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch("disable-gpu");
+app.commandLine.appendSwitch("disable-gpu-compositing");
+app.commandLine.appendSwitch("disable-software-rasterizer");
+
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {

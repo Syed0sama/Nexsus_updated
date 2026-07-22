@@ -9,8 +9,8 @@ export async function routeCommand(
   payload?: unknown
 ) {
   if (command === "brain") {
-    const text =
-      (payload as { text?: string })?.text ?? "";
+    const { text = "", source } =
+      (payload as { text?: string; source?: "voice" | "text" }) ?? {};
 
     const plan = await normalizeAndPlan(text);
 
@@ -19,17 +19,20 @@ export async function routeCommand(
     console.log("PLAN:", plan);
     console.log("=========================");
 
-    return executor.execute(plan);
+    return executor.execute(plan, source ?? "text");
   }
 
   if (command === "ai") {
     const text =
       (payload as { text?: string })?.text ?? "";
 
-    return executor.execute({
-      type: "chat",
-      text,
-    });
+    return executor.execute(
+      {
+        type: "chat",
+        text,
+      },
+      "text"
+    );
   }
 
   const directCommand = registry.get(command);

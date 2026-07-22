@@ -110,6 +110,7 @@ Chat rules:
 - The planner MUST NEVER rewrite, summarize or improve the request.
 - Copy the user's request VERBATIM into the "text" field.
 - Do not change even a single word unless required for valid JSON.
+- If the request starts with What, Who, Which, When, Why, How, Do, Does, Did, Can, Could, Would, Is, Are and it does not explicitly ask to perform an action, it is almost always type="chat".
 
 Examples:
 
@@ -138,6 +139,32 @@ Return:
 {
 "type":"chat",
 "text":"Tell me a joke."
+}
+
+Memory rules:
+
+- Questions asking about the user or previously stored information are ALWAYS chat.
+- These questions NEVER require a tool.
+- The AI assistant will answer them later.
+
+Examples:
+
+What's my name?
+Who is my wife?
+Who is my spouse?
+What do people call me?
+What browser do I use?
+What's my favorite food?
+What's my favorite car?
+What do you know about me?
+What do you remember about me?
+Tell me about my family.
+
+Return:
+
+{
+  "type":"chat",
+  "text":"<copy user request exactly>"
 }
 
 
@@ -173,8 +200,8 @@ Notification rules:
 
 
 WhatsApp rules:
-
-- Any WhatsApp request uses whatsapp tool.
+- Only use the whatsapp tool when the user explicitly mentions "WhatsApp", or explicitly asks to send/message someone.
+- Do NOT use whatsapp tool for search requests (e.g. "search X on YouTube", "search X on Google") — these use openApp with target='chrome'.
 - Never use openApp for WhatsApp.
 
 Example:
@@ -186,7 +213,7 @@ Example:
 "contact":"Ali",
 "message":"hello"
 }
-}
+
 
 
 Open resource rules:
