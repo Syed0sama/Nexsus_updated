@@ -10,7 +10,8 @@ apps/desktop/electron
 │   │   ├── performance-logger.ts
 │   │   ├── prompt-builder.ts
 │   │   ├── system-prompt.ts
-│   │   └── types.ts
+│   │   ├── types.ts
+│   │   └── voice-pipeline.ts
 │   ├── memory
 │   │   ├── format-memory.ts
 │   │   ├── index.ts
@@ -52,6 +53,8 @@ apps/desktop/electron
 │   │   ├── screenshot.command.ts
 │   │   ├── voice.command.ts
 │   │   ├── volume-up.command.ts
+│   │   ├── whatsapp-confirmation.ts
+│   │   ├── whatsapp-pending.ts
 │   │   └── whatsapp.command.ts
 │   ├── system-info.command.ts
 │   ├── time.command.ts
@@ -76,21 +79,29 @@ apps/desktop/electron
 │   ├── battery.service.ts
 │   ├── brightness.service.ts
 │   ├── clipboard.service.ts
+│   ├── command-recorder.service.ts
 │   ├── maps-service.ts
 │   ├── notification.service.ts
 │   ├── open-app.service.ts
 │   ├── path-resolver.ts
+│   ├── python
+│   │   ├── hey_nexus.onnx
+│   │   ├── hey_nexus.onnx.data
+│   │   ├── hey_nexus.onnx.data:Zone.Identifier
+│   │   ├── hey_nexus.onnx:Zone.Identifier
+│   │   └── wakeword_listener.py
+│   ├── ring-buffer.ts
 │   ├── romanizer.ts
 │   ├── screenshot.service.ts
 │   ├── speech-recognizer.ts
 │   ├── tts.service.ts
 │   ├── urdu-scriptifier.ts
-│   ├── voice.service.ts
 │   ├── volume.service.ts
+│   ├── wakeword.service.ts
 │   └── whatsapp.service.ts
 ├── shared-types.ts
 ├── tsconfig.json
 └── types
     └── mic.d.ts
 
-14 directories, 80 files
+15 directories, 90 files

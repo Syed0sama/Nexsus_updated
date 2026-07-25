@@ -5,10 +5,11 @@
   "type": "commonjs",
   "scripts": {
     "dev": "vite",
-    "build:electron": "tsc -p electron/tsconfig.json",
+    "copy:assets": "shx mkdir -p dist-electron/services/python && shx cp -r electron/services/python/* dist-electron/services/python/",
+    "build:electron": "tsc -p electron/tsconfig.json && npm run copy:assets",
     "electron": "electron dist-electron/main.js",
     "dev:electron": "wait-on http://localhost:5173 && electron dist-electron/main.js",
-    "watch:electron": "tsc -p electron/tsconfig.json --watch"
+    "watch:electron": "concurrently \"tsc -p electron/tsconfig.json --watch\" \"npm run copy:assets\""
   },
   "dependencies": {
     "msedge-tts": "^2.0.7",
@@ -21,11 +22,13 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "concurrently": "^10.0.3",
     "electron": "^43.0.0",
     "eslint": "^10.6.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "shx": "^0.4.0",
     "tsx": "^4.22.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.62.0",

@@ -9,7 +9,8 @@ apps/desktop/electron/ai
 │   ├── performance-logger.ts
 │   ├── prompt-builder.ts
 │   ├── system-prompt.ts
-│   └── types.ts
+│   ├── types.ts
+│   └── voice-pipeline.ts
 ├── memory
 │   ├── format-memory.ts
 │   ├── index.ts
@@ -31,4 +32,4 @@ apps/desktop/electron/ai
     ├── provider.ts
     └── vision-provider.ts
 
-5 directories, 27 files
+5 directories, 28 files

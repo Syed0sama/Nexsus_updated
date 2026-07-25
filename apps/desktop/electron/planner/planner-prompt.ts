@@ -203,8 +203,13 @@ WhatsApp rules:
 - Only use the whatsapp tool when the user explicitly mentions "WhatsApp", or explicitly asks to send/message someone.
 - Do NOT use whatsapp tool for search requests (e.g. "search X on YouTube", "search X on Google") — these use openApp with target='chrome'.
 - Never use openApp for WhatsApp.
+- If the request is to VIDEO CALL a contact on WhatsApp (e.g. "video call X on whatsapp", "whatsapp video call X"): set call=true, video=true and contact=<name>. Do NOT include a "message" field.
+- If the request is to CALL/PHONE/RING/DIAL a contact on WhatsApp WITHOUT the word "video" (e.g. "call X on whatsapp", "whatsapp call X", "phone X on whatsapp"): set call=true and contact=<name>. Do NOT set "video" and do NOT include a "message" field.
+- If the request is to SEND/MESSAGE/TEXT/TELL a contact something on WhatsApp: set contact=<name> and message=<text>. Do NOT include "call" or "video" fields in this case.
+- Never set "message" together with "call" or "video" in the same payload.
+- Only set "video":true when the word "video" is explicitly used; otherwise omit "video" entirely (do not set it to false).
 
-Example:
+Example (send a message):
 
 {
 "type":"tool",
@@ -213,7 +218,30 @@ Example:
 "contact":"Ali",
 "message":"hello"
 }
+}
 
+Example (voice call):
+
+{
+"type":"tool",
+"command":"whatsapp",
+"payload":{
+"contact":"Begum",
+"call":true
+}
+}
+
+Example (video call):
+
+{
+"type":"tool",
+"command":"whatsapp",
+"payload":{
+"contact":"Begum",
+"call":true,
+"video":true
+}
+}
 
 
 Open resource rules:

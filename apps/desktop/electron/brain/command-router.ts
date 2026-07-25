@@ -19,7 +19,15 @@ export async function routeCommand(
     console.log("PLAN:", plan);
     console.log("=========================");
 
-    return executor.execute(plan, source ?? "text");
+    const result = await executor.execute(plan, source ?? "text");
+
+    // Attach the tool's command name so callers (e.g. voice pipeline)
+    // can build a tailored spoken response without re-deriving it.
+    if (plan.type === "tool") {
+      return { ...result, command: plan.command };
+    }
+
+    return result;
   }
 
   if (command === "ai") {

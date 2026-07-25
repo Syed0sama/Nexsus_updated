@@ -5,25 +5,22 @@ import {
 } from "../types";
 import { routeCommand } from "../../brain/command-router";
 
-import { voiceService } from "../../services/voice.service";
+import { commandRecorder } from "../../services/command-recorder.service";
+import { speechRecognizerService } from "../../services/speech-recognizer";
 
 export class VoiceCommand implements ICommand {
   readonly name = "voice";
 
   readonly description =
-"Handles voice input using microphone and Whisper speech recognition.";
+    "Handles voice input using microphone and Whisper speech recognition.";
 
- readonly plannerHints = [
-  "start listening",
-  "start microphone",
-  "activate microphone",
-  "listen to voice",
-  "record voice",
-  "stop listening",
-  "stop microphone",
-  "transcribe voice",
-  "convert speech to text",
-];
+  readonly plannerHints = [
+    "start listening",
+    "listen to voice",
+    "record voice",
+    "transcribe voice",
+    "convert speech to text",
+  ];
 
   readonly parameters = [
     {
@@ -31,85 +28,47 @@ export class VoiceCommand implements ICommand {
       type: "string",
       required: true,
       description:
-"Voice action. Supported actions: listen, start or stop.",
+        "Voice action. Supported actions: listen.",
     },
   ] as const;
-
 
   async execute(
     context: CommandContext
   ): Promise<CommandResult> {
-
     try {
-
       const payload = context.payload as {
         action?: string;
       } | undefined;
 
-
-      const action =
-        payload?.action?.toLowerCase();
-
-
-      if (action === "start") {
-
-        await voiceService.startRecording();
-
-        return {
-          success: true,
-          type: "voice",
-          data: {
-            status: "recording_started",
-          },
-        };
-      }
+      const action = payload?.action?.toLowerCase();
 
       if (action === "listen") {
-  const text = await voiceService.listen();
+        // Manual voice trigger — records one command from the SAME
+        // shared microphone stream used by the wake-word pipeline
+        // (no second ffmpeg process, no conflicts).
+        const audioFilePath = await commandRecorder.record();
+        const text = await speechRecognizerService.transcribe(audioFilePath);
 
-  console.log("[Voice] Listening transcript:", text);
+        console.log("[Voice] Listening transcript:", text);
 
-  if (!text) {
-    return {
-      success: false,
-      error: "EMPTY_TRANSCRIPT",
-    };
-  }
+        if (!text?.trim()) {
+          return {
+            success: false,
+            error: "EMPTY_TRANSCRIPT",
+          };
+        }
 
-  return routeCommand("brain", {
-    text,
-    source: "voice",   // <-- YE ADD KARO
-  });
-}
-
-if (action === "stop") {
-  const text = await voiceService.stopRecording();
-
-  console.log("[Voice] Sending transcript to brain:", text);
-
-  if (!text) {
-    return {
-      success: false,
-      error: "EMPTY_TRANSCRIPT",
-    };
-  }
-
-  return routeCommand("brain", {
-    text,
-    source: "voice",   // <-- YE ADD KARO
-  });
-}
-
+        return routeCommand("brain", {
+          text,
+          source: "voice",
+        });
+      }
 
       return {
         success: false,
-        error:
-          "INVALID_VOICE_ACTION",
+        error: "INVALID_VOICE_ACTION",
       };
-
-
     } catch (error) {
-
       return {
         success: false,
         error:
@@ -117,7 +76,6 @@ if (action === "stop") {
             ? error.message
             : "VOICE_FAILED",
       };
-
     }
   }
 }

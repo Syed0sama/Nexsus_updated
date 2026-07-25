@@ -53,6 +53,7 @@ export async function aiBrain(
       language,
     };
   }
+  
 
   // Forget specific memory
   if (query.startsWith("forget my ")) {
@@ -155,4 +156,112 @@ if (isQuestion(input)) {
   const responseText = await provider.chat(prompt + languageInstruction);
 
   return { text: responseText, language };
+}
+
+async function classifyReplyLLM(
+  originalContact: string,
+  originalMessage: string,
+  userReply: string
+): Promise<
+  | { action: "change_contact"; contact: string }
+  | { action: "change_message"; message: string }
+  | { action: "both"; contact: string; message: string }
+  | { action: "unknown" }
+> {
+  const prompt = `Current WhatsApp draft:
+Contact: "${originalContact}"
+Message: "${originalMessage}"
+
+The user just said: "${userReply}"
+
+Figure out what they want to change. Ignore filler words like "no", "yes", "actually", "change it", "I said" — these are instructions, not content. The real new content is whatever specific name or message text appears in what they said.
+
+Reply with ONLY this exact JSON format, nothing else — no explanation, no markdown, no code fences:
+{"contact": "<new contact name or null>", "message": "<new message text or null>"}
+
+Rules:
+- If they are not changing the contact, "contact" must be null.
+- If they are not changing the message, "message" must be null.
+- Never repeat the current contact or current message back as if it were new — only put NEW/DIFFERENT values, otherwise null.
+
+Reply:`;
+
+  try {
+    const response = await provider.chat(prompt);
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return { action: "unknown" };
+
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    const contact =
+      parsed.contact && String(parsed.contact).trim().toLowerCase() !== "null"
+        ? String(parsed.contact).trim()
+        : null;
+
+    const message =
+      parsed.message && String(parsed.message).trim().toLowerCase() !== "null"
+        ? String(parsed.message).trim()
+        : null;
+
+    const contactChanged =
+      contact && contact.toLowerCase() !== originalContact.trim().toLowerCase();
+
+    const messageChanged =
+      message && message.toLowerCase() !== originalMessage.trim().toLowerCase();
+
+    if (contactChanged && messageChanged) {
+      return { action: "both", contact: contact!, message: message! };
+    }
+    if (contactChanged) {
+      return { action: "change_contact", contact: contact! };
+    }
+    if (messageChanged) {
+      return { action: "change_message", message: message! };
+    }
+
+    return { action: "unknown" };
+  } catch {
+    return { action: "unknown" };
+  }
+}
+
+export async function classifyWhatsAppCorrection(
+  originalContact: string,
+  originalMessage: string,
+  userReply: string
+): Promise<
+  | { action: "send" }
+  | { action: "cancel" }
+  | { action: "change_contact"; contact: string }
+  | { action: "change_message"; message: string }
+  | { action: "both"; contact: string; message: string }
+  | { action: "unknown" }
+> {
+  const lower = userReply.trim().toLowerCase();
+
+   if (/\b(cancel|stop|forget it|never mind|don't send|do not send|dont send)\b/i.test(lower)) {
+    return { action: "cancel" };
+  }
+  
+  // Fixed, limited vocabulary — regex stays reliable here.
+   if (
+    /\b(yes|yeah|yep|yup|correct|looks good|sounds good|perfect|go ahead|proceed)\b/i.test(lower) ||
+    /\bsend it\b/i.test(lower) ||
+    /\bsend now\b/i.test(lower) ||
+    /\bplease send\b/i.test(lower) ||
+    /^send\.?$/i.test(lower)
+  ) {
+    return { action: "send" };
+  }
+
+  
+
+  // Open-ended phrasing — single combined LLM call, so the model
+  // judges contact-vs-message together in one shot instead of two
+  // independent calls losing context of each other.
+  const result = await classifyReplyLLM(originalContact, originalMessage, userReply);
+
+  console.log("[WhatsApp Classifier]", result);
+
+  return result;
 }

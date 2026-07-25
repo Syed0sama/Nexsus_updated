@@ -31,12 +31,13 @@ export async function orchestrate(
       void memoryExtractor.extract(text, response);
     }
 
-    if (source === "voice") {
-      speak(response, language).catch((error) => {
-        console.warn("[TTS] Failed to speak response:", error);
-      });
-    }
-
+   if (source === "voice") {
+  try {
+    await speak(response, language);
+  } catch (error) {
+    console.warn("[TTS] Failed:", error);
+  }
+}
     PerformanceLogger.end(provider.name, startedAt, true);
 
     return {

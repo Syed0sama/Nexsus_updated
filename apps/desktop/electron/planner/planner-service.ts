@@ -30,16 +30,31 @@ Reply with ONLY one word: command or chat`;
   }
 }
 
+// Known tool keywords bypass the fast classifier entirely. The fast
+// classifier is a small/cheap LLM call and can misjudge borderline
+// inputs (e.g. a WhatsApp command that also contains conversational
+// phrasing) as "chat", which would skip the tool entirely. Anything
+// matching one of these keywords always goes through the full planner.
+const TOOL_KEYWORDS =
+  /\b(whatsapp|open|volume|brightness|screenshot|battery|clipboard|notification)\b/i;
+
 export async function plan(
   input: string
 ): Promise<ExecutionPlan> {
   // Fast path: skip the heavy planner prompt entirely for obvious chat.
   // This does not change behavior for tool commands — those always
   // fall through to the exact same full-planner logic as before.
-  const likelyChat = await isLikelyChat(input);
+  const skipFastClassify = TOOL_KEYWORDS.test(input);
+  const likelyChat = skipFastClassify ? false : await isLikelyChat(input);
 
   console.log("\n========== FAST CLASSIFY ==========\n");
-  console.log(likelyChat ? "chat (skipping full planner)" : "command (using full planner)");
+  console.log(
+    skipFastClassify
+      ? "skipped (tool keyword matched — using full planner)"
+      : likelyChat
+      ? "chat (skipping full planner)"
+      : "command (using full planner)"
+  );
 
   if (likelyChat) {
     return {

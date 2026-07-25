@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": "What is my wife's name?"
+    "content": "Actually I love my wife so much please write a short message for her like a single paragraph"
   },
   {
     "role": "assistant",
-    "content": "Your wife name is tayyeba."
+    "content": "Of course! Here’s a short message you could send to your wife:\n\n\"Dear [wife_name], every day reminds me how blessed I am to have you by my side. Your love and support continue to inspire me, and I cherish our moments together more than words can express. I hope all is well with you today.\"\n\nFeel free to personalize it further!"
   }
 ]

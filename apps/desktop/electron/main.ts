@@ -2,14 +2,11 @@ import { app, BrowserWindow } from "electron";
 import path from "path";
 
 import { registerCommandHandler } from "./ipc/command-handler";
+import { voicePipeline } from "./ai/core/voice-pipeline";
+import { audioCaptureService } from "./services/audio-capture.service";
 
-// WSL2/WSLg doesn't have proper GPU passthrough, so Electron's GPU
-// compositing falls back to software rendering — which keeps the
-// main process burning CPU in the background (even during idle UI
-// updates like the recording indicator), starving CPU-heavy work
-// like Whisper transcription running alongside it. Disabling hardware
-// acceleration avoids that GPU-process overhead entirely.
-// main.ts, disableHardwareAcceleration() ke sath hi:
+
+
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch("disable-gpu");
 app.commandLine.appendSwitch("disable-gpu-compositing");
@@ -33,8 +30,29 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   registerCommandHandler();
-
   createWindow();
+
+  // Single shared microphone stream — must start before anything
+  // that subscribes to it (wakewordService, voicePipeline recording).
+  audioCaptureService.start();
+
+  // Wake word listener background mein start ho jayega
+  voicePipeline.start();
+
+  // Pipeline ke state changes ko renderer tak forward karo
+  voicePipeline.on("state-change", (state: string) => {
+    mainWindow?.webContents.send("voice-state-changed", state);
+  });
+
+  // User ne jo bola (transcript) renderer ko bhejo
+  voicePipeline.on("transcript", (text: string) => {
+    mainWindow?.webContents.send("voice-transcript", text);
+  });
+
+  // Nexus ka response renderer ko bhejo
+  voicePipeline.on("response", (text: string) => {
+    mainWindow?.webContents.send("voice-response", text);
+  });
 });
 
 app.on("window-all-closed", () => {

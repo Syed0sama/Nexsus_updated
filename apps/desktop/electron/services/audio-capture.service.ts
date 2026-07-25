@@ -1,67 +1,86 @@
-import { ChildProcess, spawn } from "node:child_process";
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
+// Owns the ONE AND ONLY microphone stream for the entire app lifetime.
+// Spawns a single long-lived ffmpeg process capturing 16kHz mono
+// 16-bit PCM audio, and broadcasts every chunk to any number of
+// subscribers (wake-word detector, command recorder, etc).
+//
+// This is started once when the app boots and is never restarted.
+// Nothing else in the app should ever call `spawn("ffmpeg", ...)`.
 
-export class AudioCaptureService {
-  private process: ChildProcess | null = null;
-  private outputFile: string | null = null;
+import { spawn, ChildProcessWithoutNullStreams } from "node:child_process";
+import { EventEmitter } from "node:events";
 
-  start(): string {
-    if (this.process) {
-      throw new Error("Audio capture already running.");
+export type AudioSubscriber = (chunk: Buffer) => void;
+
+class AudioCaptureService extends EventEmitter {
+  private ffmpeg: ChildProcessWithoutNullStreams | null = null;
+  private subscribers = new Set<AudioSubscriber>();
+  private isRunning = false;
+  private restartAttempts = 0;
+  private readonly maxRestartAttempts = 3;
+
+  start(): void {
+    if (this.isRunning) {
+      console.warn("[AudioCapture] Already running — ignoring duplicate start().");
+      return;
     }
 
-    this.outputFile = path.join(
-      os.tmpdir(),
-      `nexus-audio-${Date.now()}.wav`,
-    );
+this.ffmpeg = spawn("ffmpeg", [
+  "-f", "pulse",
+  "-i", "RDPSource",
+  "-ac", "1",
+  "-ar", "16000",
+  "-f", "s16le",
+  "-acodec", "pcm_s16le",
+  "pipe:1",
+]);
 
-    this.process = spawn("ffmpeg", [
-      "-y",
-      "-f",
-      "pulse",
-      "-i",
-      "default",
-      "-ac",
-      "1",
-      "-ar",
-      "16000",
-      this.outputFile,
-    ]);
+    this.isRunning = true;
 
-    this.process.stderr?.on("data", () => {});
-
-    this.process.on("error", (err) => {
-      console.error("[AudioCapture]", err);
+    this.ffmpeg.stdout.on("data", (chunk: Buffer) => {
+      this.restartAttempts = 0; // reset once data is actually flowing
+      for (const subscriber of this.subscribers) {
+        subscriber(chunk);
+      }
+      this.emit("data", chunk);
     });
 
-    return this.outputFile;
+    this.ffmpeg.stderr.on("data", () => {});
+
+    this.ffmpeg.on("close", (code) => {
+      this.isRunning = false;
+      this.ffmpeg = null;
+      this.emit("closed", code);
+
+      if (this.restartAttempts >= this.maxRestartAttempts) {
+        console.error(
+          `[AudioCapture] Gave up after ${this.maxRestartAttempts} failed restarts (last exit code ${code}). Check ffmpeg device args.`
+        );
+        return;
+      }
+
+      this.restartAttempts++;
+      const delay = 1000 * this.restartAttempts;
+      console.warn(`[AudioCapture] ffmpeg exited (code ${code}). Retry ${this.restartAttempts}/${this.maxRestartAttempts} in ${delay}ms.`);
+      setTimeout(() => this.start(), delay);
+    });
+
+    this.ffmpeg.on("error", (err) => {
+      console.error("[AudioCapture] Failed to start ffmpeg:", err);
+      this.isRunning = false;
+    });
+
+    console.log("[AudioCapture] Single microphone stream started.");
   }
 
-  async stop(): Promise<string> {
-    if (!this.process || !this.outputFile) {
-      throw new Error("Audio capture is not running.");
-    }
-
-    this.process.kill("SIGINT");
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    if (!fs.existsSync(this.outputFile)) {
-      throw new Error("Recording file not found.");
-    }
-
-    const file = this.outputFile;
-
-    this.process = null;
-    this.outputFile = null;
-
-    return file;
+  subscribe(fn: AudioSubscriber): () => void {
+    this.subscribers.add(fn);
+    return () => this.subscribers.delete(fn);
   }
 
-  isRecording(): boolean {
-    return this.process !== null;
+  stop(): void {
+    this.ffmpeg?.kill();
+    this.ffmpeg = null;
+    this.isRunning = false;
   }
 }
 
