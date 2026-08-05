@@ -1,10 +1,9 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 
 import { registerCommandHandler } from "./ipc/command-handler";
 import { voicePipeline } from "./ai/core/voice-pipeline";
 import { audioCaptureService } from "./services/audio-capture.service";
-
 
 
 app.disableHardwareAcceleration();
@@ -15,9 +14,13 @@ app.commandLine.appendSwitch("disable-software-rasterizer");
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
-  mainWindow = new BrowserWindow({
+ mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    frame: false,
+    hasShadow: false,             // removes the faint OS drop-shadow border
+    backgroundColor: "#05060a",
+    titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -26,11 +29,34 @@ function createWindow(): void {
   });
 
   mainWindow.loadURL("http://localhost:5173");
+  mainWindow.loadURL("http://localhost:5173");
+mainWindow.webContents.openDevTools({ mode: "detach" });
 }
 
 app.whenReady().then(() => {
   registerCommandHandler();
   createWindow();
+
+
+  ipcMain.on("window:close", () => {
+  mainWindow?.close();
+});
+
+ipcMain.on("window:minimize", () => {
+  mainWindow?.minimize();
+});
+
+ipcMain.on("window:maximize", () => {
+  if (mainWindow?.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow?.maximize();
+  }
+});
+
+ipcMain.on("window:fullscreen", () => {
+  mainWindow?.setFullScreen(!mainWindow.isFullScreen());
+});
 
   // Single shared microphone stream — must start before anything
   // that subscribes to it (wakewordService, voicePipeline recording).

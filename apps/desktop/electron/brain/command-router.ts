@@ -11,8 +11,10 @@ export async function routeCommand(
   if (command === "brain") {
     const { text = "", source } =
       (payload as { text?: string; source?: "voice" | "text" }) ?? {};
+console.time("[Timing] Planning");
 
     const plan = await normalizeAndPlan(text);
+console.timeEnd("[Timing] Planning");
 
     console.log("======== PLANNER ========");
     console.log("INPUT:", text);
@@ -20,7 +22,7 @@ export async function routeCommand(
     console.log("=========================");
 
     const result = await executor.execute(plan, source ?? "text");
-
+console.timeEnd("[Timing] Execute");
     // Attach the tool's command name so callers (e.g. voice pipeline)
     // can build a tailored spoken response without re-deriving it.
     if (plan.type === "tool") {

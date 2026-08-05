@@ -10,6 +10,7 @@ class WakewordService extends EventEmitter {
   private pythonProcess: ChildProcess | null = null;
   private running = false;
   private unsubscribe: (() => void) | null = null;
+  private paused = false;
 
   start() {
     if (this.running) return;
@@ -19,10 +20,10 @@ class WakewordService extends EventEmitter {
     const scriptPath = app.isPackaged
       ? path.join(process.resourcesPath, "python", "wakeword_listener.py")
       : path.join(process.cwd(), "electron", "services", "python", "wakeword_listener.py");
-  console.log("[wakeword] scriptPath:", scriptPath);
-  console.log("[wakeword] PYTHON_PATH:", PYTHON_PATH);
+    console.log("[wakeword] scriptPath:", scriptPath);
+    console.log("[wakeword] PYTHON_PATH:", PYTHON_PATH);
     this.pythonProcess = spawn(PYTHON_PATH, [scriptPath]);
-  console.log("[wakeword] spawn() called, pid:", this.pythonProcess.pid);
+    console.log("[wakeword] spawn() called, pid:", this.pythonProcess.pid);
 
     this.pythonProcess.stdin?.on("error", (err) => {
       console.error("[wakeword] python stdin error:", err.message);
@@ -58,14 +59,40 @@ class WakewordService extends EventEmitter {
       console.error("[wakeword-python] spawn error:", err);
     });
 
+    this.subscribeToAudio();
+  }
+
+  private subscribeToAudio() {
     // Subscribe to the single shared mic stream instead of spawning our own ffmpeg
     this.unsubscribe = audioCaptureService.subscribe((chunk: Buffer) => {
       if (this.pythonProcess?.stdin && !this.pythonProcess.stdin.destroyed) {
         this.pythonProcess.stdin.write(chunk);
       }
     });
-      console.log("[wakeword] Subscribed to shared audio stream");
+    console.log("[wakeword] Subscribed to shared audio stream");
+  }
 
+  /**
+   * Stops feeding audio to the wakeword listener without killing the
+   * Python process (avoids the ~1-2s respawn/model-reload cost).
+   * With no new audio arriving, the inference loop goes idle and
+   * frees up CPU for the command-processing pipeline (whisper,
+   * planner LLM, etc.) — which is the dominant contention on 4-core
+   * hardware.
+   */
+  pause() {
+    if (this.paused) return;
+    this.paused = true;
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+    console.log("[wakeword] paused (audio feed stopped)");
+  }
+
+  resume() {
+    if (!this.paused) return;
+    this.paused = false;
+    this.subscribeToAudio();
+    console.log("[wakeword] resumed (audio feed restored)");
   }
 
   stop() {
@@ -74,6 +101,7 @@ class WakewordService extends EventEmitter {
     this.pythonProcess?.kill();
     this.pythonProcess = null;
     this.running = false;
+    this.paused = false;
   }
 
   isRunning(): boolean {

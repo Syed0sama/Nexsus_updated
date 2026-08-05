@@ -18,7 +18,7 @@ export class SpeechRecognizerService {
   private readonly model = path.join(
     this.whisperRoot,
     "models",
-    "ggml-medium.bin",
+    "ggml-base.bin",
   );
 
   async transcribe(audioFile: string): Promise<string> {

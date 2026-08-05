@@ -1,9 +1,9 @@
 // electron/services/tts.service.ts
 
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
-import { spawn } from "node:child_process";
+import { spawn, execSync, ChildProcessByStdio } from "node:child_process";
+import type { Writable, Readable } from "node:stream";
 import path from "node:path";
-import os from "node:os";
 import fs from "node:fs";
 import { randomUUID } from "node:crypto";
 import { toUrduScript } from "./urdu-scriptifier";
@@ -27,8 +27,31 @@ function convertWslPathToWindows(wslPath: string): string {
   return `\\\\wsl.localhost\\${distro}\\${rest}`;
 }
 
-function escapePowerShell(value: string): string {
-  return value.replace(/'/g, "''");
+// ---- Windows native temp dir (cached) ----
+// We write TTS output directly into Windows' own temp folder (via the
+// /mnt/c drvfs mount) instead of WSL's /tmp. That way playback later
+// reads a local C:\ path instead of going through the slow
+// \\wsl.localhost\ 9p network share, which was the real bottleneck.
+
+let cachedWinTempWsl: string | null = null;
+
+function getWindowsTempDirAsWsl(): string {
+  if (cachedWinTempWsl) return cachedWinTempWsl;
+
+  const raw = execSync(
+    'powershell.exe -NoProfile -Command "[Environment]::GetEnvironmentVariable(\'TEMP\')"'
+  )
+    .toString()
+    .trim();
+
+  const m = raw.match(/^([a-zA-Z]):\\(.*)$/);
+  if (!m) {
+    throw new Error(`Unexpected Windows TEMP path: ${raw}`);
+  }
+  const drive = m[1].toLowerCase();
+  const rest = m[2].replace(/\\/g, "/");
+  cachedWinTempWsl = `/mnt/${drive}/${rest}`;
+  return cachedWinTempWsl;
 }
 
 async function synthesizeToFile(
@@ -37,9 +60,6 @@ async function synthesizeToFile(
 ): Promise<string> {
   const voice = VOICES[language];
 
-  // The Urdu neural voice is trained on native Urdu script, not
-  // Roman Urdu. Feeding it Latin-script text produces a mispronounced,
-  // "foreign accent" result, so convert the script first.
   const speechText =
     language === "ur" ? await toUrduScript(text) : text;
 
@@ -51,7 +71,8 @@ async function synthesizeToFile(
     OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
   );
 
-  const outputDir = path.join(os.tmpdir(), `nexus-tts-${randomUUID()}`);
+  const winTempWsl = getWindowsTempDirAsWsl();
+  const outputDir = path.join(winTempWsl, `nexus-tts-${randomUUID()}`);
   fs.mkdirSync(outputDir, { recursive: true });
 
   await tts.toFile(outputDir, speechText);
@@ -59,35 +80,67 @@ async function synthesizeToFile(
   return path.join(outputDir, "audio.mp3");
 }
 
-function playAudioFile(filePath: string): Promise<void> {
-  const windowsPath = convertWslPathToWindows(filePath);
+// ---- Persistent PowerShell player (avoids per-call process spawn + WPF reload) ----
 
-  console.log("[TTS] Windows path for playback:", windowsPath);
+type PlayerProcess = ChildProcessByStdio<Writable, Readable, null>;
 
+let playerProcess: PlayerProcess | null = null;
+let playbackResolvers: Array<() => void> = [];
+
+function startPersistentPlayer(): void {
   const script = `
 Add-Type -AssemblyName PresentationCore
 $player = New-Object System.Windows.Media.MediaPlayer
-$player.Open([Uri]::new('${escapePowerShell(windowsPath)}'))
-Start-Sleep -Milliseconds 500
-$player.Play()
-while ($player.NaturalDuration.HasTimeSpan -eq $false) { Start-Sleep -Milliseconds 100 }
-Start-Sleep -Seconds $player.NaturalDuration.TimeSpan.TotalSeconds
-$player.Stop()
-$player.Close()
+while ($true) {
+  $path = [Console]::In.ReadLine()
+  if ($path -eq $null) { break }
+  $player.Open([Uri]::new($path))
+  Start-Sleep -Milliseconds 100
+  $player.Play()
+  while ($player.NaturalDuration.HasTimeSpan -eq $false) { Start-Sleep -Milliseconds 50 }
+  Start-Sleep -Seconds $player.NaturalDuration.TimeSpan.TotalSeconds
+  $player.Stop()
+  Write-Output "DONE"
+}
 `.trim();
 
-  return new Promise((resolve, reject) => {
-    const child = spawn(
-      "powershell.exe",
-      ["-NoProfile", "-STA", "-Command", script],
-      { stdio: "inherit" }
-    );
+  playerProcess = spawn(
+    "powershell.exe",
+    ["-NoProfile", "-STA", "-Command", script],
+    { stdio: ["pipe", "pipe", "inherit"] }
+  );
 
-    child.once("error", reject);
-    child.once("exit", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`Audio playback failed (${code})`));
-    });
+  playerProcess.stdout.on("data", (data: Buffer) => {
+    if (data.toString().includes("DONE")) {
+      const resolve = playbackResolvers.shift();
+      if (resolve) resolve();
+    }
+  });
+
+  playerProcess.once("exit", () => {
+    // If PowerShell dies unexpectedly, drop the reference so the
+    // next playAudioFile call restarts it instead of writing to a
+    // dead pipe.
+    playerProcess = null;
+  });
+}
+
+function ensurePlayerRunning(): PlayerProcess {
+  if (!playerProcess) {
+    startPersistentPlayer();
+  }
+  return playerProcess!;
+}
+
+function playAudioFile(filePath: string): Promise<void> {
+  const windowsPath = convertWslPathToWindows(filePath);
+  console.log("[TTS] Windows path for playback:", windowsPath);
+
+  const proc = ensurePlayerRunning();
+
+  return new Promise((resolve) => {
+    playbackResolvers.push(resolve);
+    proc.stdin.write(windowsPath + "\n");
   });
 }
 

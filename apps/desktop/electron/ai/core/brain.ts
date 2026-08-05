@@ -14,6 +14,40 @@ import { detectLanguage } from "./language-detector";
  * memory retrieval, since the fact they're describing may not be
  * saved yet (extraction runs async, after this function returns).
  */
+/**
+ * Converts a stored memory key like "wife_name" or "mother_name" into
+ * a natural spoken phrase like "your wife's name" or "your mother's
+ * name", instead of the flat "wife name" / "mother name" which sounds
+ * robotic when read aloud by TTS.
+ */
+function keyToNaturalPhrase(key: string): string {
+  const KEY_PHRASES: Record<string, string> = {
+    name: "your name",
+    wife_name: "your wife's name",
+    husband_name: "your husband's name",
+    mother_name: "your mother's name",
+    father_name: "your father's name",
+    sister_name: "your sister's name",
+    brother_name: "your brother's name",
+    best_friend_name: "your best friend's name",
+    favorite_color: "your favorite color",
+    favorite_food: "your favorite food",
+    favorite_movie: "your favorite movie",
+    birthday: "your birthday",
+    job_title: "your job title",
+    company: "the company you work at",
+    city: "the city you live in",
+  };
+
+  if (KEY_PHRASES[key]) {
+    return KEY_PHRASES[key];
+  }
+
+  // Fallback for any key not explicitly mapped above: turn
+  // "some_key" into "your some key" as a reasonable generic phrasing.
+  return `your ${key.replace(/_/g, " ")}`;
+}
+
 export function isQuestion(input: string): boolean {
   const trimmed = input.trim();
 
@@ -84,39 +118,10 @@ export async function aiBrain(
     };
   }
 
-  // Memory retrieval
-if (isQuestion(input)) {
-  const relevantMemory = await memoryRetriever.retrieve(input);
-
-  if (relevantMemory) {
-    return {
-      text: memoryResponder.respond(relevantMemory, language),
-      language,
-    };
-  }
- // Strict retriever found no valid match — don't fall through to
-  // buildPrompt(), which does its own loose/unvalidated memory search
-  // and can leak raw "key: value" pairs into the LLM's response.
-  return {
-    text: language === "ur"
-      ? "Mujhe iska sahi jawab nahi mila. Kya aap dobara pooch sakte hain?"
-      : "I don't have a confident answer for that. Could you rephrase the question?",
-    language,
-  };
-}
-  const personalFactMarkers =
-    /\b(mera|meri|mere|my)\b.*\b(naam|name)\b|\b(naam|name)\b.*\b(hai|is)\b/i;
-
-  if (personalFactMarkers.test(input)) {
-    return {
-      text: language === "ur"
-        ? "Theek hai, maine ye yaad rakh liya hai."
-        : "Got it, I've noted that down.",
-      language,
-    };
-  }
-
-  // Memory Recall (full dump)
+  // Memory Recall (full dump) -- checked BEFORE the single-fact
+  // question retrieval below, since "what do you know about me" is
+  // itself a question and would otherwise be swallowed by isQuestion()
+  // and fail single-fact retrieval instead of reaching this dump.
   if (
     query.includes("what do you know about me") ||
     query.includes("what do you remember about me")
@@ -132,17 +137,50 @@ if (isQuestion(input)) {
       };
     }
 
-    const header =
+   const header =
       language === "ur"
         ? "Ye hai jo mujhe aapke baray mein pata hai:"
         : "Here's what I know about you:";
 
+ const factsSentence = memories
+      .map((m) => `${keyToNaturalPhrase(m.key)} is ${m.value}`)
+      .join(", ");
+
     return {
-      text: [
-        header,
-        "",
-        ...memories.map((m) => `• ${m.key.replace(/_/g, " ")}: ${m.value}`),
-      ].join("\n"),
+      text: `${header} ${factsSentence}.`,
+      language,
+    };
+  }
+
+  // Memory retrieval
+  if (isQuestion(input)) {
+    const relevantMemory = await memoryRetriever.retrieve(input);
+
+    if (relevantMemory) {
+      return {
+        text: memoryResponder.respond(relevantMemory, language),
+        language,
+      };
+    }
+    // Strict retriever found no valid match — don't fall through to
+    // buildPrompt(), which does its own loose/unvalidated memory search
+    // and can leak raw "key: value" pairs into the LLM's response.
+    return {
+      text: language === "ur"
+        ? "Mujhe iska sahi jawab nahi mila. Kya aap dobara pooch sakte hain?"
+        : "I don't have a confident answer for that. Could you rephrase the question?",
+      language,
+    };
+  }
+
+  const personalFactMarkers =
+    /\b(mera|meri|mere|my)\b.*\b(naam|name)\b|\b(naam|name)\b.*\b(hai|is)\b/i;
+
+  if (personalFactMarkers.test(input)) {
+    return {
+      text: language === "ur"
+        ? "Theek hai, maine ye yaad rakh liya hai."
+        : "Got it, I've noted that down.",
       language,
     };
   }

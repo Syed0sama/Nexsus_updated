@@ -7,6 +7,10 @@ declare global {
       onVoiceStateChanged: (callback: (state: string) => void) => () => void;
       onVoiceTranscript: (callback: (text: string) => void) => () => void;
       onVoiceResponse: (callback: (text: string) => void) => () => void;
+      minimizeWindow: () => void;
+      maximizeWindow: () => void;
+      fullscreenWindow: () => void;
+      closeWindow: () => void;
     };
   }
 }

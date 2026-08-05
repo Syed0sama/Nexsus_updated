@@ -25,4 +25,20 @@ contextBridge.exposeInMainWorld("nexus", {
     ipcRenderer.on("voice-response", listener);
     return () => ipcRenderer.removeListener("voice-response", listener);
   },
+
+  minimizeWindow: () => {
+    ipcRenderer.send("window:minimize");
+  },
+
+  maximizeWindow: () => {
+    ipcRenderer.send("window:maximize");
+  },
+
+  fullscreenWindow: () => {
+    ipcRenderer.send("window:fullscreen");
+  },
+
+  closeWindow: () => {
+    ipcRenderer.send("window:close");
+  }
 });

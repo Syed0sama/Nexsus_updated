@@ -23,7 +23,7 @@ MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hey_nexus
 
 
 def main():
-    model = Model(wakeword_model_paths=[MODEL_PATH], inference_framework="onnx")
+    model = Model(wakeword_model_paths=[MODEL_PATH])
     buffer = b""
 
     while True:

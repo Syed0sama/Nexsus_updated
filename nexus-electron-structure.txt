@@ -32,6 +32,10 @@ apps/desktop/electron
 │       ├── ollama.ts
 │       ├── provider.ts
 │       └── vision-provider.ts
+├── assets
+│   ├── done-tone.wav
+│   ├── listen-tone.wav
+│   └── response-tone.wav
 ├── brain
 │   ├── command-router.ts
 │   ├── executor.ts
@@ -41,14 +45,17 @@ apps/desktop/electron
 ├── commands
 │   ├── ai.command.ts
 │   ├── apps
-│   │   └── open-app.command.ts
+│   │   ├── open-app.command.ts
+│   │   └── youtube-play.command.ts
 │   ├── index.ts
 │   ├── ping.command.ts
 │   ├── registry.ts
 │   ├── system
 │   │   ├── battery.command.ts
 │   │   ├── brightness.command.ts
+│   │   ├── calendar.command.ts
 │   │   ├── clipboard.command.ts
+│   │   ├── gmail.command.ts
 │   │   ├── notification.command.ts
 │   │   ├── screenshot.command.ts
 │   │   ├── voice.command.ts
@@ -59,6 +66,11 @@ apps/desktop/electron
 │   ├── system-info.command.ts
 │   ├── time.command.ts
 │   └── types.ts
+├── config
+│   ├── google-credentials.json
+│   ├── google-credentials.json:Zone.Identifier
+│   ├── google-token.json
+│   └── youtube-api-key.json
 ├── ipc
 │   └── command-handler.ts
 ├── main.ts
@@ -78,8 +90,12 @@ apps/desktop/electron
 │   ├── audio-capture.service.ts
 │   ├── battery.service.ts
 │   ├── brightness.service.ts
+│   ├── calendar.service.ts
+│   ├── chime.service.ts
 │   ├── clipboard.service.ts
 │   ├── command-recorder.service.ts
+│   ├── gmail.service.ts
+│   ├── google-auth.service.ts
 │   ├── maps-service.ts
 │   ├── notification.service.ts
 │   ├── open-app.service.ts
@@ -98,10 +114,11 @@ apps/desktop/electron
 │   ├── urdu-scriptifier.ts
 │   ├── volume.service.ts
 │   ├── wakeword.service.ts
-│   └── whatsapp.service.ts
+│   ├── whatsapp.service.ts
+│   └── youtube.service.ts
 ├── shared-types.ts
 ├── tsconfig.json
 └── types
     └── mic.d.ts
 
-15 directories, 90 files
+17 directories, 105 files

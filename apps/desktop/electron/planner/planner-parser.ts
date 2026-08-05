@@ -1,6 +1,30 @@
 import type { ExecutionPlan } from "../brain/types";
 import type { PlannerResult } from "./types";
 
+
+function extractJson(response: string): string {
+  let text = response.trim();
+
+  // Strip markdown code fences if present (```json ... ``` or ``` ... ```)
+  text = text.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "");
+
+  // Find the first { and its matching closing } by bracket depth,
+  // in case there's still leading/trailing text around the JSON.
+  const start = text.indexOf("{");
+  if (start === -1) return text;
+
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === "{") depth++;
+    if (text[i] === "}") depth--;
+    if (depth === 0) {
+      return text.slice(start, i + 1);
+    }
+  }
+
+  return text.slice(start);
+}
+
 function normalizeOpenResource(
   plan: ExecutionPlan
 ): ExecutionPlan {
@@ -81,7 +105,7 @@ export function parsePlannerResponse(
   input?: string
 ): PlannerResult {
   try {
-    const parsed = JSON.parse(response);
+    const parsed = JSON.parse(extractJson(response));
 
     if (
       parsed &&

@@ -31,6 +31,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.wake-word-env
 
 # ===========================
 # OS Files
@@ -103,3 +104,7 @@ ollama-data/
 
 # Whisper.cpp
 whisper.cpp/
+
+.youtube-api-key.json
+electron/config/google-credentials.json
+electron/config/google-token.json

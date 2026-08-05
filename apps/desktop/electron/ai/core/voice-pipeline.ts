@@ -15,6 +15,7 @@ const GREETING_TEXT = "How may I assist you?";
 const MAX_CONVERSATION_TURNS = 6;
 
 function writeWavFile(filePath: string, pcmChunks: Buffer[], sampleRate = 16000): void {
+  console.time("[Timing] Write WAV");
   const pcmData = Buffer.concat(pcmChunks);
   const header = Buffer.alloc(44);
 
@@ -43,6 +44,15 @@ function writeWavFile(filePath: string, pcmChunks: Buffer[], sampleRate = 16000)
  */
 function buildSpokenResponse(result: any): string {
   if (!result?.success) {
+    if (result?.error === "EVENT_NOT_FOUND") {
+      return "I couldn't find that event on your calendar.";
+    }
+    if (result?.error === "MISSING_CREATE_FIELDS" || result?.error === "MISSING_EDIT_FIELDS") {
+      return "I need a bit more detail — like the event name and date — to do that.";
+    }
+    if (result?.error === "NO_VIDEO_FOUND") {
+      return "I couldn't find that video on YouTube.";
+    }
     return "Sorry, that didn't work.";
   }
 
@@ -104,6 +114,91 @@ function buildSpokenResponse(result: any): string {
     case "notification":
       return "Notification sent.";
 
+case "calendar": {
+      const events = data?.events as { summary: string; start: string }[] | undefined;
+      const range = (data?.range as string | undefined) ?? "";
+
+      const rangeLabel =
+        range === "today" ? "today" :
+        range === "this-month" ? "this month" :
+        range === "previous-month" ? "last month" :
+        range ? `in ${range.charAt(0).toUpperCase() + range.slice(1)}` :
+        "in that period";
+
+      if (!events || events.length === 0) {
+        return `You have no events ${rangeLabel}.`;
+      }
+
+      const list = events
+        .map((e) => {
+          const hasTime = e.start.includes("T");
+          if (!hasTime) return e.summary;
+
+          const date = new Date(e.start);
+          const timeStr = date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+          return `${e.summary} at ${timeStr}`;
+        })
+        .join(", ");
+
+      return `You have ${events.length} event${events.length > 1 ? "s" : ""} ${rangeLabel}: ${list}.`;
+    }
+
+case "gmail": {
+      const unreadCount = data?.unreadCount as number | undefined;
+      const recentEmails = data?.recentEmails as { subject: string; from: string }[] | undefined;
+
+      if (!recentEmails || recentEmails.length === 0) {
+        return "You don't have any emails in your inbox.";
+      }
+
+      const unreadPart =
+        unreadCount && unreadCount > 0
+          ? `You have ${unreadCount} unread email${unreadCount > 1 ? "s" : ""}. `
+          : "You have no unread emails. ";
+
+      if (recentEmails.length === 1) {
+        const e = recentEmails[0];
+        return `${unreadPart}Your latest email is from ${e.from}, with the subject: ${e.subject}`;
+      }
+
+      const list = recentEmails
+        .map((e, i) => `${i + 1}. From ${e.from}, subject: ${e.subject}`)
+        .join(". ");
+
+      return `${unreadPart}Here are your ${recentEmails.length} most recent emails: ${list}`;
+    }
+
+    case "youtubePlay": {
+      return `Playing "${data?.query}" on YouTube.`;
+    }
+    case "time": {
+  const iso = data?.time as string | undefined;
+
+  if (!iso) {
+    return "I couldn't determine the current date and time.";
+  }
+
+  const now = new Date(iso);
+
+  const date = now.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  return `Today is ${date}, and the current time is ${time}.`;
+}
     default:
       return "Done.";
   }
@@ -116,12 +211,14 @@ class VoicePipeline extends EventEmitter {
     wakewordService.start();
     this.emit("state-change", "idle");
 
-    wakewordService.on("wakeword-detected", async () => {
+  wakewordService.on("wakeword-detected", async () => {
       if (this.listening) return;
       this.listening = true;
+      wakewordService.pause();   // ← yeh line add karo
 
       try {
         console.log("🔊 Wake word detected — greeting...");
+        this.emit("transcript", "Hey Nexus");
         this.emit("state-change", "greeting");
 
         try {
@@ -142,6 +239,7 @@ class VoicePipeline extends EventEmitter {
 
           console.log(`🎙️ Recording command (turn ${turn})...`);
           this.emit("state-change", "recording");
+          console.time("[Timing] Recording");
 
           const chunks: Buffer[] = [];
           const unsubscribe = audioCaptureService.subscribe((chunk: Buffer) => {
@@ -149,14 +247,18 @@ class VoicePipeline extends EventEmitter {
           });
 
           await new Promise((resolve) => setTimeout(resolve, RECORDING_DURATION_MS));
+          console.timeEnd("[Timing] Recording");
           unsubscribe();
 
           const wavFile = path.join(os.tmpdir(), `nexus-command-${Date.now()}.wav`);
           writeWavFile(wavFile, chunks);
+          console.timeEnd("[Timing] Write WAV");
 
           this.emit("state-change", "thinking");
-          const text = await speechRecognizerService.transcribe(wavFile);
+          console.time("[Timing] Speech-to-Text");
 
+          const text = await speechRecognizerService.transcribe(wavFile);
+          console.timeEnd("[Timing] Speech-to-Text");
           const pendingBefore = whatsappPending.get();
 
           if (!text || text.trim().length === 0) {
@@ -184,12 +286,12 @@ class VoicePipeline extends EventEmitter {
             keepGoing = !done;
             continue;
           }
-
+          console.time("[Timing] Tool Selection + Execution");
           const result: any = await routeCommand("brain", {
             text,
             source: "voice",
           });
-
+          console.timeEnd("[Timing] Tool Selection + Execution");
           console.log("[VoicePipeline] Command result:", result);
 
           if (result?.type === "chat") {
@@ -222,6 +324,7 @@ class VoicePipeline extends EventEmitter {
         this.listening = false;
         whatsappPending.clear(); // safety net in case of an unexpected exit
         this.emit("state-change", "idle");
+        wakewordService.resume();   // ← yeh line add karo
       }
     });
   }

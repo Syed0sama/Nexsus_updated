@@ -119,12 +119,41 @@ export default function App() {
     // coreState via onVoiceStateChanged. This click just plays the
     // tone; the wake word still has to be spoken to start the flow.
   };
-
-  return (
+return (
     <div className="app-shell">
       <header className="app-header">
         <h1>Nexus</h1>
         <span className="app-status">{coreState.toUpperCase()}</span>
+     <div className="window-controls">
+  <button
+    className="window-btn window-btn--min"
+    onClick={() => window.nexus.minimizeWindow()}
+    aria-label="Minimize"
+  >
+    &#8211;
+  </button>
+  <button
+    className="window-btn window-btn--max"
+    onClick={() => window.nexus.maximizeWindow()}
+    aria-label="Maximize"
+  >
+    &#9723;
+  </button>
+  <button
+    className="window-btn window-btn--fullscreen"
+    onClick={() => window.nexus.fullscreenWindow()}
+    aria-label="Fullscreen"
+  >
+    &#10021;
+  </button>
+  <button
+    className="window-btn window-btn--close"
+    onClick={() => window.nexus.closeWindow()}
+    aria-label="Close"
+  >
+    &#10005;
+  </button>
+</div>
       </header>
 
       <div className="chat-log" ref={logRef}>

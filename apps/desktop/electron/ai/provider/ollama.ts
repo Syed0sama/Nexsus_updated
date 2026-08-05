@@ -1,44 +1,71 @@
 import type { AIProvider } from "./provider";
 import { aiConfig } from "../config/ai.config";
-
+import { Agent, setGlobalDispatcher } from "undici";
 
 type OllamaResponse = {
   response: string;
 };
 
+setGlobalDispatcher(
+  new Agent({
+    headersTimeout: 300_000, // 5 minutes
+    bodyTimeout: 300_000,
+  })
+);
+
+// Tune to actual WSL2 processor count (check with `nproc`). Passing
+// num_thread explicitly stops Ollama from guessing/over-allocating
+// threads that then compete with whisper/wakeword/vite for the same
+// limited cores.
+const OLLAMA_NUM_THREAD = 4;
+
+// Keep the model resident in memory between calls instead of letting
+// it idle-unload (was showing "Stopping..." in `ollama ps`), which
+// was adding a full model-reload cost to every single request.
+const OLLAMA_KEEP_ALIVE = "30m";
 
 export class OllamaProvider implements AIProvider {
   readonly name = "ollama";
 
- async chat(prompt: string): Promise<string> {
-  const res = await fetch(
-    `${aiConfig.ollama.baseUrl}/api/generate`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: aiConfig.ollama.model,
-        prompt,
-        stream: false,
-      }),
-    }
-  );
+  async chat(prompt: string): Promise<string> {
+    console.time("[Ollama] Total");
+    console.time("[Ollama] HTTP");
+    const res = await fetch(
+      `${aiConfig.ollama.baseUrl}/api/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: aiConfig.ollama.model,
+          prompt,
+          stream: false,
+          keep_alive: OLLAMA_KEEP_ALIVE,
+          options: {
+          num_thread: OLLAMA_NUM_THREAD,
+          num_predict: 256,
+          temperature: 0,
+        },
+        }),
+      }
+    );
+          console.timeEnd("[Ollama] HTTP");
 
-  if (!res.ok) {
-    throw new Error("Ollama request failed");
+    if (!res.ok) {
+      console.timeEnd("[Ollama] HTTP");
+  console.timeEnd("[Ollama] Total");
+      throw new Error("Ollama request failed");
+    }
+    console.time("[Ollama] JSON");
+    const raw = await res.json();
+    console.timeEnd("[Ollama] JSON");
+    const data = raw as OllamaResponse;
+console.timeEnd("[Ollama] Total");
+    return data.response;
   }
 
-  const raw = await res.json();
-  const data = raw as OllamaResponse;
-
-  return data.response;
-}
-
-
-  async stream
-  (
+  async stream(
     prompt: string,
     onChunk: (chunk: string) => void
   ): Promise<void> {
@@ -51,6 +78,10 @@ export class OllamaProvider implements AIProvider {
         model: aiConfig.ollama.model,
         prompt,
         stream: true,
+        keep_alive: OLLAMA_KEEP_ALIVE,
+        options: {
+          num_thread: OLLAMA_NUM_THREAD,
+        },
       }),
     });
 

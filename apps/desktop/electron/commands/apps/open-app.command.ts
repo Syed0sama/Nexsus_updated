@@ -20,7 +20,8 @@ export class OpenAppCommand implements ICommand {
 readonly plannerHints = [
   "Use this tool to open websites through Chrome using HTTPS URLs.",
   "Website requests should use target='chrome' and provide a complete HTTPS url.",
-  "YouTube search requests should open Chrome with a YouTube search URL.",
+"YouTube SEARCH requests (not play requests) should open Chrome with a YouTube search URL -- use this ONLY when the user wants to see search results, not play a video directly.",
+  "If the user says 'play' a video on YouTube, do NOT use this tool -- use the youtubePlay tool instead.",
   "Example: Search 'belki' on YouTube means target='chrome' and url='https://www.youtube.com/search?q=belki'.",
 
   // Maps / location / directions — cover multiple phrasings

@@ -67,7 +67,14 @@ private async validateMatch(
 ): Promise<boolean> {
   const prompt = `You are validating a memory lookup.
 
-Common Roman Urdu relation words and their meaning:
+The stored fact has a key and a value. Some keys are about the user's OWN
+information (e.g. name, age, city, job, favorite color) — for these, no
+relation word is needed in the request; a direct match on the topic (e.g.
+"what is my name" -> key "name") is enough.
+
+Other keys are about a RELATED PERSON (e.g. wife_name, mother_name,
+father_name, friend_name) — for these, the request must mention the
+matching relation word. Common Roman Urdu relation words and their meaning:
 ammi/ami/amma = mother, abbu/abba/walid = father, biwi/bivi/bivii = wife,
 shohar/khawand = husband, behen/bahen = sister, bhai = brother.
 
@@ -78,10 +85,11 @@ treated the same as a question): "${query}"
 Stored fact: ${memory.key} = ${memory.value}
 
 Does this stored fact directly and specifically answer or fulfill what the
-user is asking for? Match the relation word in the request (using the
-glossary above if needed) to the key in the stored fact.
-If the request asks about a different person or a different attribute than
-what's stored, answer "no".
+user is asking for?
+- If the key is about the user's own info (name, age, city, etc.) and the
+  request is asking about that same topic, answer "yes".
+- If the key is about a related person, the request must reference that
+  same relation (directly or via the glossary) — otherwise answer "no".
 
 Reply with ONLY one word: yes or no.`;
 

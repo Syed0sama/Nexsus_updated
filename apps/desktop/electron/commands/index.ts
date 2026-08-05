@@ -13,6 +13,9 @@ import { NotificationCommand } from "./system/notification.command";
 import { ScreenshotCommand } from "./system/screenshot.command";
 import { WhatsAppCommand } from "./system/whatsapp.command";
 import { VoiceCommand } from "./system/voice.command";
+import { CalendarCommand } from "./system/calendar.command";
+import { GmailCommand } from "./system/gmail.command";
+import { YoutubePlayCommand } from "./apps/youtube-play.command";
 
 
 registry.register(new PingCommand());
@@ -28,7 +31,9 @@ registry.register(new NotificationCommand());
 registry.register(new ScreenshotCommand());
 registry.register(new WhatsAppCommand());
 registry.register(new VoiceCommand());
-
+registry.register(new CalendarCommand());
+registry.register(new GmailCommand());
+registry.register(new YoutubePlayCommand());
 
 console.log("REGISTERED COMMANDS:", registry.list());
 
